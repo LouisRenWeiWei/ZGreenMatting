@@ -1,0 +1,70 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/top">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="登录"
+            android:textSize="18sp" />
+
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:background="@color/app_bg" />
+
+    <RadioGroup
+        android:id="@+id/rg_login_register"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:paddingLeft="39dp"
+        android:paddingRight="39dp"
+        android:paddingTop="58dp">
+
+        <RadioButton
+            android:id="@+id/rbtn_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="3dp"
+            android:button="@null"
+            android:checked="true"
+            android:drawableBottom="@drawable/selector_login_line"
+            android:drawablePadding="13dp"
+            android:gravity="center"
+            android:text="登录"
+            android:textColor="#474747"
+            android:textSize="15sp" />
+
+        <RadioButton
+            android:id="@+id/rbtn_register"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:button="@null"
+            android:drawableBottom="@drawable/selector_login_line"
+            android:drawablePadding="13dp"
+            android:gravity="center"
+            android:text="注册"
+            android:textColor="#474747"
+            android:textSize="15sp" />
+    </RadioGroup>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+</LinearLayout>
