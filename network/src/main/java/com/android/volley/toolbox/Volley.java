@@ -23,11 +23,36 @@ import android.net.http.AndroidHttpClient;
 import android.os.Build;
 
 import com.android.volley.Network;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.VolleyLog;
 
 import java.io.File;
 
 public class Volley {
+
+    private static volatile RequestQueue requestQueue;
+
+    private static Context mContext;
+    public static void init(Context context,boolean debug){
+        mContext = context;
+        VolleyLog.DEBUG = debug;
+    }
+
+    public static RequestQueue getRequestQueue(){
+        if (requestQueue==null){
+            synchronized (Volley.class){
+                if(requestQueue==null){
+                    requestQueue = newRequestQueue(mContext);
+                }
+            }
+        }
+        return requestQueue;
+    }
+
+    private static void add(Request request) {
+        getRequestQueue().add(request);
+    }
 
     /** Default on-disk cache directory. */
     private static final String DEFAULT_CACHE_DIR = "volley";

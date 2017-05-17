@@ -23,7 +23,7 @@
         android:maxLines="1"
         android:textColor="@color/app_text_color"
         android:textColorHint="#a3a3a3"
-        android:textSize="15sp"></EditText>
+        android:textSize="15sp"/>
 
 
     <EditText
@@ -44,9 +44,7 @@
         android:maxLines="1"
         android:textColor="@color/app_text_color"
         android:textColorHint="#a3a3a3"
-        android:textSize="15sp">
-
-    </EditText>
+        android:textSize="15sp"/>
 
     <TextView
         android:id="@+id/tv_login"
@@ -61,7 +59,6 @@
         android:text="登录"
         android:textColor="@color/white"
         android:textSize="16sp" />
-
     <TextView
         android:id="@+id/forget_password_btn"
         android:layout_width="wrap_content"
@@ -72,5 +69,4 @@
         android:textColor="@color/app_text_color"
         android:textSize="13sp"
         android:visibility="gone"/>
-
 </LinearLayout>
