@@ -10,13 +10,6 @@ import android.support.v4.app.FragmentTransaction;
 
 import butterknife.ButterKnife;
 
-
-/**
- * Created by 任伟伟
- * Datetime: 2016/10/24-18:53
- * Email: renweiwei@ufashion.com
- */
-
 public abstract class BaseFragmentActivity extends FragmentActivity {
     protected Context mContext;
     private FragmentManager fragmentManager;
@@ -34,9 +27,9 @@ public abstract class BaseFragmentActivity extends FragmentActivity {
         preInitData();
     }
 
-    protected abstract int getContentLayout();
+    protected abstract int getContentLayout();//加载布局
 
-    protected abstract void preInitData();
+    protected abstract void preInitData();//初始化数据
 
     protected abstract int getContentId();
 
@@ -54,8 +47,9 @@ public abstract class BaseFragmentActivity extends FragmentActivity {
         return fragmentManager.findFragmentByTag(tag);
     }
 
-    protected abstract void showFragment(String tag);
+    protected abstract void showFragment(String tag);//显示fragment
 
+    //fragment切换
     protected void switchContent(Fragment to, String tag) {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         if (mContent!=null&&to != mContent) {

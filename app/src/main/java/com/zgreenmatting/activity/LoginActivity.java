@@ -1,13 +1,9 @@
 package com.zgreenmatting.activity;
 
-import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.text.TextUtils;
-import android.view.View;
-import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -21,11 +17,10 @@ import com.zgreenmatting.fragment.RegisterFragment;
 import java.util.ArrayList;
 
 import butterknife.BindView;
-import butterknife.OnClick;
 
 
 public class LoginActivity extends BaseFragmentActivity {
-
+    //初始化
     @BindView(R.id.tv_title)
     TextView tv_title;
     @BindView(R.id.rg_login_register)
@@ -37,8 +32,8 @@ public class LoginActivity extends BaseFragmentActivity {
 
     @BindView(R.id.viewpager)
     ViewPager viewpager;
-    Fragment loginFragment;
-    Fragment registerFragment;
+    Fragment loginFragment;//登录
+    Fragment registerFragment;//注册
 
 
     @Override
@@ -55,13 +50,16 @@ public class LoginActivity extends BaseFragmentActivity {
         fragments.add(registerFragment);
         viewpager.setOnPageChangeListener(new MyOnPageChangeListener());
         viewpager.setAdapter(new LoginPagerAdapter(getSupportFragmentManager(), fragments));
+        //登录、注册   切换
         rg_login_register.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (rbtn_login.isChecked()){
                     tv_title.setText("登录");
+                    viewpager.setCurrentItem(0);
                 }else {
                     tv_title.setText("注册");
+                    viewpager.setCurrentItem(1);
                 }
             }
         });
@@ -76,6 +74,7 @@ public class LoginActivity extends BaseFragmentActivity {
     protected void showFragment(String tag) {
 
     }
+    //ViewPager.OnPageChangeListener
     public class MyOnPageChangeListener implements ViewPager.OnPageChangeListener {
         public void onPageSelected(int arg0) {
             if (arg0==0){
@@ -90,13 +89,12 @@ public class LoginActivity extends BaseFragmentActivity {
         public void onPageScrollStateChanged(int arg0) {
         }
     }
-
+    //ViewPager PagerAdapter
     public class LoginPagerAdapter extends FragmentPagerAdapter {
-        ArrayList<Fragment> list;
+        ArrayList<Fragment> list;//fragment list
         public LoginPagerAdapter(FragmentManager fm, ArrayList<Fragment> list) {
             super(fm);
             this.list = list;
-
         }
 
         @Override

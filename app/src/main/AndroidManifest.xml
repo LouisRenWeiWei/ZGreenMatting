@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.zgreenmatting">
 
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.CAMERA"/>
 
@@ -19,12 +20,14 @@
             android:name="com.zgreenmatting.glide.GlideConfiguration"
             android:value="GlideModule"/>
 
-        <activity android:name=".activity.MainActivity">
+        <activity android:name=".activity.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".activity.MainActivity">
         </activity>
         <activity
             android:name=".activity.CameraActivity"
@@ -34,6 +37,7 @@
         </activity>
         <activity android:name=".activity.GalleryActivity">
         </activity>
+
     </application>
 
 </manifest>
