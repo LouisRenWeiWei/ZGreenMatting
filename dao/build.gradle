@@ -1,0 +1,40 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion LIBRARY_COMPILE_SDK_VERSION
+    buildToolsVersion LIBRARY_BUILD_TOOLS_VERSION
+
+    defaultConfig {
+        minSdkVersion LIBRARY_MIN_SDK_VERSION
+        targetSdkVersion LIBRARY_TARGET_SDK_VERSION
+    }
+
+    lintOptions {
+        quiet true
+        abortOnError false
+    }
+}
+
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral() // add repository
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.3.2'
+        classpath 'org.greenrobot:greendao-gradle-plugin:3.2.2' // add plugin
+    }
+}
+apply plugin: 'org.greenrobot.greendao' // apply plugin
+
+//greendao配置
+greendao {
+    schemaVersion 1                 //版本号，升级时可配置  数据库schema版本，可在这里升级数据库版本
+    daoPackage'com.igoda.dao'     //包名 设置DaoMaster、DaoSession、Dao包名
+    targetGenDir'src/main/java'   //生成目录 设置DaoMaster、DaoSession、Dao目录
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'org.greenrobot:greendao:3.2.2' // add library
+}
