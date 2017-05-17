@@ -14,6 +14,7 @@ import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.zgreenmatting.R;
+import com.zgreenmatting.utils.NetworkUtils;
 import com.zgreenmatting.utils.ToastUtils;
 
 import org.json.JSONObject;
@@ -61,6 +62,10 @@ public class LoginFragment extends BaseFragment {
         }
         if(TextUtils.isEmpty(passwd)){
             ToastUtils.showCustomerToast(mContext,"请输入密码");
+            return;
+        }
+        if(!NetworkUtils.isNetworkAvailable(mContext)){
+            ToastUtils.showCustomerToast(mContext,"请检查网络连接");
             return;
         }
         StringRequest request = new StringRequest(Request.Method.POST, "", new Listener<String>() {

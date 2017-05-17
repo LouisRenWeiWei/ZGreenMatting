@@ -14,9 +14,8 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="登录"
-            android:textSize="18sp" />
-
-
+            android:textSize="18sp"
+            android:textColor="@color/app_text_color"/>
     </RelativeLayout>
 
     <View
