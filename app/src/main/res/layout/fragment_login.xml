@@ -1,0 +1,76 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/et_account"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="39dp"
+        android:layout_marginRight="39dp"
+        android:layout_marginTop="68dp"
+        android:background="@null"
+        android:drawableBottom="@drawable/login_et_line"
+        android:drawablePadding="15dp"
+        android:ems="13"
+        android:hint="账号"
+        android:inputType="number"
+        android:maxLines="1"
+        android:textColor="@color/app_text_color"
+        android:textColorHint="#a3a3a3"
+        android:textSize="15sp"></EditText>
+
+
+    <EditText
+        android:id="@+id/et_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="39dp"
+        android:layout_marginRight="39dp"
+        android:layout_marginTop="15dp"
+        android:background="@null"
+        android:drawableBottom="@drawable/login_et_line"
+        android:drawablePadding="15dp"
+        android:ems="13"
+        android:hint="密码"
+        android:inputType="textPassword"
+        android:maxLength="10"
+        android:maxLines="1"
+        android:textColor="@color/app_text_color"
+        android:textColorHint="#a3a3a3"
+        android:textSize="15sp">
+
+    </EditText>
+
+    <TextView
+        android:id="@+id/tv_login"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="39dp"
+        android:layout_marginRight="39dp"
+        android:layout_marginTop="70dp"
+        android:background="@color/pink"
+        android:gravity="center"
+        android:text="登录"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/forget_password_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="13dp"
+        android:text="忘记密码？"
+        android:textColor="@color/app_text_color"
+        android:textSize="13sp"
+        android:visibility="gone"/>
+
+</LinearLayout>

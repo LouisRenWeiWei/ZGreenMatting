@@ -1,5 +1,7 @@
 package com.zgreenmatting.fragment;
 
+import com.zgreenmatting.R;
+
 /**
  * Created by ASUS on 2017/5/17.
  */
@@ -7,7 +9,7 @@ package com.zgreenmatting.fragment;
 public class RegisterFragment extends BaseFragment {
     @Override
     protected int getContentLayout() {
-        return 0;
+        return R.layout.fragment_register;
     }
 
     @Override
