@@ -60,8 +60,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageAdapter
         Glide.with(mContext)
                 .load(imageList.get(position))
                 .placeholder(R.mipmap.ic_camera_beauty)
-                .crossFade()
                 .into(holder.image);
+
     }
 
     @Override

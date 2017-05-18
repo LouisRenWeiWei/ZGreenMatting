@@ -8,7 +8,7 @@ import com.bumptech.glide.load.DecodeFormat;
 import com.bumptech.glide.load.engine.cache.InternalCacheDiskCacheFactory;
 import com.bumptech.glide.module.GlideModule;
 
-public class GlideConfiguration  implements GlideModule{
+public class GlideConfiguration implements GlideModule{
 
 	@Override
 	public void applyOptions(Context context, GlideBuilder builder) {
