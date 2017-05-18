@@ -6,6 +6,8 @@ package com.zgreenmatting.utils;
 
 public class RequestUtil {
     public static final String server = "";
-    public static final String login = server+"";
-    public static final String registe = server+"";
+    public static final String login = server+"login.do";
+    public static final String registe = server+"registry.do";
+    public static final String getImageList = server+"backdrops.do";
+    public static final String sendImageLis = server+"send.do";
 }

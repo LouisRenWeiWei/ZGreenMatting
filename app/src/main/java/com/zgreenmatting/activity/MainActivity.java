@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.PermissionChecker;
+import android.util.Log;
 
 import com.zgreenmatting.BaseActivity;
 import com.zgreenmatting.R;
+import com.zgreenmatting.utils.PhoneUtil;
 
 public class MainActivity extends BaseActivity {
 
@@ -28,7 +30,8 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void preInitData() {
-
+        Log.e("main:", PhoneUtil.getDevicesID(mContext));
+        Log.e("main:", PhoneUtil.getBrand());
     }
 
     @Override
