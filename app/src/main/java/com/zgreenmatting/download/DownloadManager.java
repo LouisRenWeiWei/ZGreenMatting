@@ -300,7 +300,7 @@ public enum DownloadManager {
         } else if (mErrorTasks.contains(task)) {
             mErrorTasks.remove(task);
         } else {
-            Log.w(TAG, "can not find task :" + entity.getPath());
+            Log.w(TAG, "can not find task :" + entity.getUrl());
         }
     }
 
