@@ -16,23 +16,52 @@ public class MattingImage {
     private String name;//名称
     private String path;//服务器路径
     private String sdPath;//下载本地路径
-    private int download;//是否下载了
     private int state;//状态
+    private long size;
+    private long downloadSize;//已经下载的大小
+    private long downloadState;//下载状态
 
+    public long getDownloadState() {
+        return downloadState;
+    }
 
-    @Generated(hash = 683330930)
+    public void setDownloadState(long downloadState) {
+        this.downloadState = downloadState;
+    }
+
+    public long getDownloadSize() {
+        return downloadSize;
+    }
+
+    public void setDownloadSize(long downloadSize) {
+        this.downloadSize = downloadSize;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
+    }
+
+   
+
+    @Generated(hash = 1366292585)
+    public MattingImage() {
+    }
+
+    @Generated(hash = 1112109635)
     public MattingImage(String id, String name, String path, String sdPath,
-            int download, int state) {
+            int state, long size, long downloadSize, long downloadState) {
         this.id = id;
         this.name = name;
         this.path = path;
         this.sdPath = sdPath;
-        this.download = download;
         this.state = state;
-    }
-
-    @Generated(hash = 1366292585)
-    public MattingImage() {
+        this.size = size;
+        this.downloadSize = downloadSize;
+        this.downloadState = downloadState;
     }
 
     public String getId() {
@@ -67,13 +96,6 @@ public class MattingImage {
         this.sdPath = sdPath;
     }
 
-    public int getDownload() {
-        return download;
-    }
-
-    public void setDownload(int download) {
-        this.download = download;
-    }
 
     public int getState() {
         return state;
