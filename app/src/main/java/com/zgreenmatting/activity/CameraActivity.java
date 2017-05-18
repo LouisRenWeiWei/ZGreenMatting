@@ -23,6 +23,12 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.VolleyError;
+import com.android.volley.listener.Listener;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.igoda.dao.entity.MattingImage;
 import com.seu.magicfilter.MagicEngine;
 import com.seu.magicfilter.filter.advanced.MagicAAFilter;
@@ -36,9 +42,11 @@ import com.zgreenmatting.adapter.FilterAdapter;
 import com.zgreenmatting.download.DownloadManager;
 import com.zgreenmatting.download.IDownloadStateListener;
 import com.zgreenmatting.download.status.DownloadStatus;
+import com.zgreenmatting.utils.AppData;
+import com.zgreenmatting.utils.NetworkUtils;
+import com.zgreenmatting.utils.ToastUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -239,7 +247,7 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
      */
     @Override
     protected void preInitData() {
-
+        getBackdrops();
     }
 
     @Override
@@ -428,5 +436,29 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
             }
         }
         hideFilters();
+    }
+
+    //////////////////
+    //获取背景数据
+    private void getBackdrops(){
+        StringRequest request = new StringRequest(Request.Method.POST, "", new Listener<String>() {
+            @Override
+            public void onSuccess(String response) {
+
+            }
+            @Override
+            public void onError(VolleyError error) {
+
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("account", AppData.getString(mContext,AppData.ACCOUNT));
+//                map.put("passwd", passwd);
+                return map;
+            }
+        };
+        Volley.getRequestQueue().add(request);
     }
 }
