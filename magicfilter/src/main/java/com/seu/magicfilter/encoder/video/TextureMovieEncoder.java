@@ -28,7 +28,6 @@ import com.seu.magicfilter.encoder.gles.EglCore;
 import com.seu.magicfilter.filter.base.MagicCameraInputFilter;
 import com.seu.magicfilter.filter.base.gpuimage.GPUImageFilter;
 import com.seu.magicfilter.filter.helper.MagicFilterFactory;
-import com.seu.magicfilter.filter.helper.MagicFilterType;
 
 import java.io.File;
 import java.io.IOException;
@@ -383,7 +382,7 @@ public class TextureMovieEncoder implements Runnable {
         // Create new programs and such for the new context.
         mInput = new MagicCameraInputFilter();
         mInput.init();
-        filter = MagicFilterFactory.initFilters(type);
+        filter = MagicFilterFactory.initFilters();
         if(filter != null){
             filter.init();
             filter.onInputSizeChanged(mPreviewWidth, mPreviewHeight);
@@ -406,7 +405,7 @@ public class TextureMovieEncoder implements Runnable {
 
         mInput = new MagicCameraInputFilter();
         mInput.init();
-        filter = MagicFilterFactory.initFilters(type);
+        filter = MagicFilterFactory.initFilters();
         if(filter != null){
             filter.init();
             filter.onInputSizeChanged(mPreviewWidth, mPreviewHeight);
@@ -431,13 +430,13 @@ public class TextureMovieEncoder implements Runnable {
         if(filter != null){
             filter.destroy();
             filter = null;
-            type = MagicFilterType.NONE;
+            //type = MagicFilterType.NONE;
         }
     }
-    private MagicFilterType type = MagicFilterType.NONE;
-    public void setFilter(MagicFilterType type) {
-        this.type = type;
-    }
+    //private MagicFilterType type = MagicFilterType.NONE;
+//    public void setFilter(MagicFilterType type) {
+//        this.type = type;
+//    }
 
     private int mPreviewWidth = -1;
     private int mPreviewHeight = -1;

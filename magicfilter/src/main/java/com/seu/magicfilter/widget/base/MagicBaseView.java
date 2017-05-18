@@ -7,7 +7,6 @@ import android.util.AttributeSet;
 
 import com.seu.magicfilter.filter.base.gpuimage.GPUImageFilter;
 import com.seu.magicfilter.filter.helper.MagicFilterFactory;
-import com.seu.magicfilter.filter.helper.MagicFilterType;
 import com.seu.magicfilter.helper.SavePictureTask;
 import com.seu.magicfilter.utils.OpenGlUtils;
 import com.seu.magicfilter.utils.Rotation;
@@ -122,14 +121,14 @@ public abstract class MagicBaseView extends GLSurfaceView implements GLSurfaceVi
             mOnFilterChangedListener.filterChange(filter);
     }
 
-    public void setFilter(final MagicFilterType type){
+    public void setFilter(){
         queueEvent(new Runnable() {
             @Override
             public void run() {
                 if (filter != null)
                     filter.destroy();
                 filter = null;
-                filter = MagicFilterFactory.initFilters(type);
+                filter = MagicFilterFactory.initFilters();
                 if (filter != null)
                     filter.init();
                 onFilterChanged();

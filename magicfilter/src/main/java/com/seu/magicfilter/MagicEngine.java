@@ -1,7 +1,6 @@
 package com.seu.magicfilter;
 
 import com.seu.magicfilter.camera.CameraEngine;
-import com.seu.magicfilter.filter.helper.MagicFilterType;
 import com.seu.magicfilter.helper.SavePictureTask;
 import com.seu.magicfilter.utils.MagicParams;
 import com.seu.magicfilter.widget.base.MagicBaseView;
@@ -25,8 +24,8 @@ public class MagicEngine {
 
     }
 
-    public void setFilter(MagicFilterType type){
-        MagicParams.magicBaseView.setFilter(type);
+    public void setFilter(){
+        MagicParams.magicBaseView.setFilter();
     }
 
     public void savePicture(File file, SavePictureTask.OnPictureSaveListener listener){

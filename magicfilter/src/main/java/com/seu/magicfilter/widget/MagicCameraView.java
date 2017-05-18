@@ -10,7 +10,6 @@ import android.view.SurfaceHolder;
 import com.seu.magicfilter.camera.CameraEngine;
 import com.seu.magicfilter.camera.utils.CameraInfo;
 import com.seu.magicfilter.filter.base.MagicCameraInputFilter;
-import com.seu.magicfilter.filter.helper.MagicFilterType;
 import com.seu.magicfilter.helper.SavePictureTask;
 import com.seu.magicfilter.utils.OpenGlUtils;
 import com.seu.magicfilter.widget.base.MagicBaseView;
@@ -103,8 +102,8 @@ public class MagicCameraView extends MagicBaseView {
     };
 
     @Override
-    public void setFilter(MagicFilterType type) {
-        super.setFilter(type);
+    public void setFilter() {
+        super.setFilter();
     }
 
     private void openCamera(){
