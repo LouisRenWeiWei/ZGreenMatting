@@ -9,22 +9,26 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.igoda.dao.entity.MattingImage;
 import com.seu.magicfilter.filter.helper.MagicFilterType;
 import com.zgreenmatting.R;
 import com.zgreenmatting.helper.FilterTypeHelper;
+
+import java.util.List;
 
 /**
  * Created by why8222 on 2016/3/17.
  */
 public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterHolder> {
 
-    private MagicFilterType[] filters;
+    private List<MattingImage> data;
     private Context context;
     private int selected = 0;
 
 
-    public FilterAdapter(Context context, MagicFilterType[] filters) {
-        this.filters = filters;
+    public FilterAdapter(Context context, List<MattingImage> data) {
+        this.data = data;
         this.context = context;
     }
 
@@ -48,14 +52,11 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterHold
 
     @Override
     public void onBindViewHolder(FilterHolder holder, final int position) {
-        holder.thumbImage.setImageResource(FilterTypeHelper.FilterType2Thumb(filters[position]));
-        holder.filterName.setText(FilterTypeHelper.FilterType2Name(filters[position]));
-        holder.filterName.setBackgroundColor(context.getResources().getColor(
-                FilterTypeHelper.FilterType2Color(filters[position])));
+        MattingImage item = data.get(position);
+        Glide.with(context).load(item.getSdPath()).into(holder.thumbImage);
+        holder.filterName.setText(item.getName());
         if (position == selected) {
             holder.thumbSelected.setVisibility(View.VISIBLE);
-            holder.thumbSelected_bg.setBackgroundColor(context.getResources().getColor(
-                    FilterTypeHelper.FilterType2Color(filters[position])));
             holder.thumbSelected_bg.setAlpha(0.7f);
         } else {
             holder.thumbSelected.setVisibility(View.GONE);
@@ -71,7 +72,7 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterHold
                 selected = position;
                 notifyItemChanged(lastSelected);
                 notifyItemChanged(position);
-                onFilterChangeListener.onFilterChanged(filters[position]);
+                onFilterChangeListener.onFilterChanged();
                 onFilterChangeListener.onChangePostion(position);
             }
         });
@@ -79,15 +80,15 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterHold
 
     @Override
     public int getItemCount() {
-        return filters == null ? 0 : filters.length;
+        return data == null ? 0 : data.size();
     }
 
     class FilterHolder extends RecyclerView.ViewHolder {
-        ImageView thumbImage;
-        TextView filterName;
+        ImageView thumbImage;//缩略图
+        TextView filterName;//名称
         FrameLayout thumbSelected;
         FrameLayout filterRoot;
-        View thumbSelected_bg;
+        View thumbSelected_bg;//选择背景
 
         public FilterHolder(View itemView) {
             super(itemView);
@@ -95,7 +96,7 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterHold
     }
 
     public interface onFilterChangeListener {
-        void onFilterChanged(MagicFilterType filterType);
+        void onFilterChanged();
 
         void onChangePostion(int position);
     }
