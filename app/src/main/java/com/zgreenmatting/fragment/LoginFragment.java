@@ -4,20 +4,17 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.android.volley.listener.Listener;
-import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.zgreenmatting.R;
 import com.zgreenmatting.utils.NetworkUtils;
+import com.zgreenmatting.utils.PhoneUtil;
 import com.zgreenmatting.utils.ToastUtils;
-
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -81,9 +78,14 @@ public class LoginFragment extends BaseFragment {
         }){
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("account",account);
-                map.put("passwd", passwd);
+                Map<String, String> map = new HashMap<>();
+                map.put("account", account.toUpperCase());
+                map.put("password", passwd);
+                map.put("device_id", PhoneUtil.getDevicesID(mContext));
+                map.put("model", PhoneUtil.getBrand());
+                map.put("version_name",PhoneUtil.getVersionName(mContext));
+                map.put("version_code",PhoneUtil.getVersionCode(mContext));
+                map.put("os_version", PhoneUtil.getSystemVersion());
                 return map;
             }
         };

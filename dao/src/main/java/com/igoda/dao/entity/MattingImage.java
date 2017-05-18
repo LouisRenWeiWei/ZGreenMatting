@@ -22,6 +22,25 @@ public class MattingImage {
     private long downloadSize;//已经下载的大小
     private long downloadState;//下载状态
 
+    @Generated(hash = 104092732)
+    public MattingImage(Long id, String name, String url, String value,
+            String sdPath, int state, long size, long downloadSize,
+            long downloadState) {
+        this.id = id;
+        this.name = name;
+        this.url = url;
+        this.value = value;
+        this.sdPath = sdPath;
+        this.state = state;
+        this.size = size;
+        this.downloadSize = downloadSize;
+        this.downloadState = downloadState;
+    }
+
+    @Generated(hash = 1366292585)
+    public MattingImage() {
+    }
+
     public Long getId() {
         return id;
     }
