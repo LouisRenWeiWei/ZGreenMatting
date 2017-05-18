@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.PermissionChecker;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -34,6 +35,7 @@ import com.seu.magicfilter.MagicEngine;
 import com.seu.magicfilter.filter.advanced.MagicAAFilter;
 import com.seu.magicfilter.filter.base.gpuimage.GPUImageFilter;
 import com.seu.magicfilter.filter.helper.MagicFilterType;
+import com.seu.magicfilter.helper.SavePictureTask;
 import com.seu.magicfilter.widget.MagicCameraView;
 import com.seu.magicfilter.widget.base.MagicBaseView;
 import com.zgreenmatting.BaseActivity;
@@ -43,7 +45,10 @@ import com.zgreenmatting.download.DownloadManager;
 import com.zgreenmatting.download.IDownloadStateListener;
 import com.zgreenmatting.download.status.DownloadStatus;
 import com.zgreenmatting.utils.AppData;
+import com.zgreenmatting.utils.GetBigFileMD5;
 import com.zgreenmatting.utils.NetworkUtils;
+import com.zgreenmatting.utils.PhoneUtil;
+import com.zgreenmatting.utils.RequestUtil;
 import com.zgreenmatting.utils.ToastUtils;
 
 import java.io.File;
@@ -316,8 +321,19 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
                 Environment.DIRECTORY_PICTURES), "ZGreenMatting");
         Log.e("test","file : "+getOutputMediaFile());
         Log.e("test","file : "+mediaStorageDir.getPath() + File.separator);
-        magicEngine.savePicture(getOutputMediaFile(),null);
+        magicEngine.savePicture(getOutputMediaFile(), new SavePictureTask.OnPictureSaveListener() {
+            @Override
+            public void onSaved(String result) {
+                //
+                if(!TextUtils.isEmpty(result)){
+                    uploadPicInfo(result);
+                }
+            }
+        });
     }
+
+
+
     public File getOutputMediaFile() {
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "ZGreenMatting");
@@ -441,7 +457,7 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
     //////////////////
     //获取背景数据
     private void getBackdrops(){
-        StringRequest request = new StringRequest(Request.Method.POST, "", new Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, RequestUtil.getImageList, new Listener<String>() {
             @Override
             public void onSuccess(String response) {
 
@@ -455,7 +471,31 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("account", AppData.getString(mContext,AppData.ACCOUNT));
-//                map.put("passwd", passwd);
+                map.put("sim", PhoneUtil.getDevicesID(mContext));
+                return map;
+            }
+        };
+        Volley.getRequestQueue().add(request);
+    }
+
+    private void uploadPicInfo(String picPath) {
+        final String hash = GetBigFileMD5.getMD5(new File(picPath));
+        StringRequest request = new StringRequest(Request.Method.POST, RequestUtil.sendImageInfo, new Listener<String>() {
+            @Override
+            public void onSuccess(String response) {
+
+            }
+            @Override
+            public void onError(VolleyError error) {
+
+            }
+        }){
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("account", AppData.getString(mContext,AppData.ACCOUNT));
+                map.put("value", hash);
+                map.put("sim", PhoneUtil.getDevicesID(mContext));
                 return map;
             }
         };
