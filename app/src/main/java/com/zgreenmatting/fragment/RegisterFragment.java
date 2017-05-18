@@ -12,6 +12,7 @@ import com.android.volley.listener.Listener;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.zgreenmatting.R;
+import com.zgreenmatting.utils.AppData;
 import com.zgreenmatting.utils.NetworkUtils;
 import com.zgreenmatting.utils.PhoneUtil;
 import com.zgreenmatting.utils.RequestUtil;
@@ -88,7 +89,10 @@ public class RegisterFragment extends BaseFragment {
                 try {
                     JSONObject obj = new JSONObject(response);
                     if (obj.getInt("code") == 200) {
-
+                        AppData.saveString(mContext, AppData.ACCOUNT, account.toUpperCase());
+                        AppData.saveString(mContext, AppData.PASSWORD, passwd);
+                    }else {
+                        ToastUtils.showSystemToast(mContext,obj.getString("msg"));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -37,6 +37,9 @@ public class MainActivity extends BaseActivity {
         if (grantResults.length != 1 || grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Log.e("main:", PhoneUtil.getDevicesID(mContext));
             Log.e("main:", PhoneUtil.getBrand());
+            Log.e("main:", PhoneUtil.getSystemVersion());
+            Log.e("main:", PhoneUtil.getVersionName(mContext));
+            Log.e("main:", PhoneUtil.getVersionCode(mContext));
             startActivity();
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
