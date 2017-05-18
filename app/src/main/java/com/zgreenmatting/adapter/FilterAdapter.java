@@ -13,6 +13,8 @@ import com.bumptech.glide.Glide;
 import com.igoda.dao.entity.MattingImage;
 import com.seu.magicfilter.filter.helper.MagicFilterType;
 import com.zgreenmatting.R;
+import com.zgreenmatting.download.DownloadManager;
+import com.zgreenmatting.download.status.DownloadStatus;
 import com.zgreenmatting.helper.FilterTypeHelper;
 
 import java.util.List;
@@ -26,10 +28,14 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterHold
     private Context context;
     private int selected = 0;
 
+    //
+    DownloadManager downloadManager;
+
 
     public FilterAdapter(Context context, List<MattingImage> data) {
         this.data = data;
         this.context = context;
+        downloadManager = DownloadManager.INSTANCE;
     }
 
     @Override
@@ -76,6 +82,17 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterHold
                 onFilterChangeListener.onChangePostion(position);
             }
         });
+
+        //添加到下载任务
+        if (item.getDownloadState() == DownloadStatus.NONE.getValue()) {
+            downloadManager.onOffer(item);
+        } else if (item.getDownloadState() == DownloadStatus.DLING.getValue()) {
+            downloadManager.onPause(item);
+        } else if (item.getDownloadState() == DownloadStatus.PAUSE.getValue()) {
+            downloadManager.onContinue(item);
+        } else if (item.getDownloadState() == DownloadStatus.ERROR.getValue()) {
+            downloadManager.onContinue(item);
+        }
     }
 
     @Override
@@ -106,5 +123,4 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterHold
     public void setOnFilterChangeListener(onFilterChangeListener onFilterChangeListener) {
         this.onFilterChangeListener = onFilterChangeListener;
     }
-
 }

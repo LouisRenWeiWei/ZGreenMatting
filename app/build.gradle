@@ -42,6 +42,8 @@ android {
             path "CMakeLists.txt"
         }
     }
+
+    useLibrary 'org.apache.http.legacy'
 }
 
 dependencies {

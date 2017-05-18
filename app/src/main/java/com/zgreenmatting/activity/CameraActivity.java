@@ -142,8 +142,8 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            int progress = (int)(((double)size / (double)((AppInfo)entity).APPSIZE)  * 100);
-                            ((AppInfo)entity).cur_size = progress;
+                            int progress = (int)(((double)size / (double)((MattingImage)entity).getSize())  * 100);
+                            ((MattingImage)entity).setDownloadSize(size);
                             updateView(entity, DownloadStatus.WAIT, progress);
                         }
                     });
@@ -154,8 +154,8 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            int progress = (int)(((double)size / (double)((AppInfo)entity).APPSIZE)  * 100);
-                            ((AppInfo)entity).cur_size = progress;
+                            int progress = (int)(((double)size / (double)((MattingImage)entity).getSize())  * 100);
+                            ((MattingImage)entity).setDownloadSize(size);
                             updateView(entity, DownloadStatus.DLING, progress);
                         }
                     });
@@ -187,8 +187,8 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            int progress = (int)(((double)size / (double)((AppInfo)entity).APPSIZE)  * 100);
-                            ((AppInfo)entity).cur_size = progress;
+                            int progress = (int)(((double)size / (double)((MattingImage)entity).getSize())  * 100);
+                            ((MattingImage)entity).setDownloadSize(size);
                             updateView(entity, DownloadStatus.PAUSE, progress);
                         }
                     });
@@ -211,6 +211,18 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * 更新item
+     * @param entity
+     * @param status
+     * @param objects
+     */
+    protected void updateView(Object entity, DownloadStatus status, Object... objects) {
+        ((MattingImage)entity).setDownloadState(status.getValue());
+        int itemIdx = data.indexOf(entity);
+        mAdapter.notifyItemChanged(itemIdx);
     }
 
     @Override
