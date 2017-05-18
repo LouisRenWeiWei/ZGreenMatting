@@ -22,7 +22,7 @@ public class MainActivity extends BaseActivity {
     protected void preInitView() {
         if (PermissionChecker.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[] { Manifest.permission.CAMERA }, 1);
+            ActivityCompat.requestPermissions(MainActivity.this, new String[] { Manifest.permission.CAMERA , Manifest.permission.READ_PHONE_STATE}, 1);
         } else {
             startActivity();
         }
@@ -30,14 +30,13 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void preInitData() {
-        Log.e("main:", PhoneUtil.getDevicesID(mContext));
-        Log.e("main:", PhoneUtil.getBrand());
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (grantResults.length != 1 || grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//            startActivity(requestCode);
+            Log.e("main:", PhoneUtil.getDevicesID(mContext));
+            Log.e("main:", PhoneUtil.getBrand());
             startActivity();
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
