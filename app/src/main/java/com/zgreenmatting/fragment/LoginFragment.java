@@ -16,6 +16,8 @@ import com.zgreenmatting.utils.NetworkUtils;
 import com.zgreenmatting.utils.PhoneUtil;
 import com.zgreenmatting.utils.ToastUtils;
 
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,7 +70,16 @@ public class LoginFragment extends BaseFragment {
         StringRequest request = new StringRequest(Request.Method.POST, "", new Listener<String>() {
             @Override
             public void onSuccess(String response) {
+                try {
+                    JSONObject obj = new JSONObject(response);
+                    if (obj.getInt("code") == 200) {
 
+                    }else {
+                        ToastUtils.showSystemToast(mContext,obj.getString("msg"));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
