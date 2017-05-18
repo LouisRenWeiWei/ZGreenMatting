@@ -199,11 +199,11 @@ public enum DownloadManager {
             String fileName = entity.getName();
             switch (type) {
                 case MULTI://cdn
-                    URL url4Multi = new URL(entity.getPath());
+                    URL url4Multi = new URL(entity.getUrl());
                     strate = new MultiTask(fileName, url4Multi, entity, downloadStateListeners);//test
                     break;
                 default://https
-                    URL url4Single = new URL(entity.getPath());
+                    URL url4Single = new URL(entity.getUrl());
                     strate = new SingleTask(fileName, url4Single, entity, downloadStateListeners);
                     break;
             }
