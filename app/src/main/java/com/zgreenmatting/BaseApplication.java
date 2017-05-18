@@ -17,7 +17,6 @@ public class BaseApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = this;
-        AppData.init(mContext);
         Volley.init(mContext,false);//初始化volley
     }
 
