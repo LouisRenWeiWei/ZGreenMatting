@@ -1,5 +1,6 @@
 package com.zgreenmatting.fragment;
 
+import android.content.Intent;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -12,6 +13,7 @@ import com.android.volley.listener.Listener;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.zgreenmatting.R;
+import com.zgreenmatting.activity.MainActivity;
 import com.zgreenmatting.utils.NetworkUtils;
 import com.zgreenmatting.utils.PhoneUtil;
 import com.zgreenmatting.utils.ToastUtils;
@@ -73,7 +75,7 @@ public class LoginFragment extends BaseFragment {
                 try {
                     JSONObject obj = new JSONObject(response);
                     if (obj.getInt("code") == 200) {
-
+                        startActivity(new Intent(mContext, MainActivity.class));
                     }else {
                         ToastUtils.showSystemToast(mContext,obj.getString("msg"));
                     }

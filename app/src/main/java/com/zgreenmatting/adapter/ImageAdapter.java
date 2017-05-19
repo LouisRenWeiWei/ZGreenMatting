@@ -17,12 +17,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 25  *     自定义适配器ImageAdapter
- * 26  * 在ImageAdapter中主要做了图片的倒影效果 以及 创建了对原始图片和倒影的显示区域
- * 27  *
- * 28  * @author hebao
- * 29  *
- * 30
+ * 自定义适配器ImageAdapter
+ *
  */
 
 
