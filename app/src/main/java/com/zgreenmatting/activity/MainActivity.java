@@ -22,7 +22,8 @@ public class MainActivity extends BaseActivity {
     protected void preInitView() {
         if (PermissionChecker.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[] { Manifest.permission.CAMERA , Manifest.permission.READ_PHONE_STATE}, 1);
+            ActivityCompat.requestPermissions(MainActivity.this, new String[] { Manifest.permission.CAMERA ,
+                    Manifest.permission.READ_PHONE_STATE}, 1);
         } else {
             startActivity();
         }
@@ -35,11 +36,6 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (grantResults.length != 1 || grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Log.e("main:", PhoneUtil.getDevicesID(mContext));
-            Log.e("main:", PhoneUtil.getBrand());
-            Log.e("main:", PhoneUtil.getSystemVersion());
-            Log.e("main:", PhoneUtil.getVersionName(mContext));
-            Log.e("main:", PhoneUtil.getVersionCode(mContext));
             startActivity();
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -47,6 +43,11 @@ public class MainActivity extends BaseActivity {
     }
 
     private void startActivity() {
+        Log.e("main_devicesId:", PhoneUtil.getDevicesID(mContext));
+        Log.e("main_品牌型号:", PhoneUtil.getBrand());
+        Log.e("main_系统版本:", PhoneUtil.getSystemVersion());
+        Log.e("main_appName:", PhoneUtil.getVersionName(mContext));
+        Log.e("main_appCode:", PhoneUtil.getVersionCode(mContext));
         startActivity(new Intent(this, CameraActivity.class));
         finish();
     }
