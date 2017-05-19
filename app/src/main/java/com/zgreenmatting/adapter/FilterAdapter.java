@@ -87,10 +87,19 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterHold
         if (item.getDownloadState() == DownloadStatus.NONE.getValue()) {
             downloadManager.onOffer(item);
         } else if (item.getDownloadState() == DownloadStatus.DLING.getValue()) {
+            //下载中
             downloadManager.onPause(item);
-        } else if (item.getDownloadState() == DownloadStatus.PAUSE.getValue()) {
+        } else if (item.getDownloadState() == DownloadStatus.WAIT.getValue()) {
+            //等待
+
+        }else if (item.getDownloadState() == DownloadStatus.DONE.getValue()) {
+            //完成
+
+        }else if (item.getDownloadState() == DownloadStatus.PAUSE.getValue()) {
+            //暂停
             downloadManager.onContinue(item);
         } else if (item.getDownloadState() == DownloadStatus.ERROR.getValue()) {
+            //失败
             downloadManager.onContinue(item);
         }
     }

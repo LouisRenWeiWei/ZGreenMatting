@@ -13,29 +13,17 @@ import org.greenrobot.greendao.annotation.Id;
 public class MattingImage {
     @Id(autoincrement = true)
     private Long id;//id
-    private String name;//背景名称
     private String url;//服务器路径
     private String value;//hash值
+
+    private String name;//背景名称   Deprecated
+
     private String sdPath;//下载本地路径
-    private int state;//状态
     private long size;
     private long downloadSize;//已经下载的大小
     private long downloadState;//下载状态
 
-    @Generated(hash = 104092732)
-    public MattingImage(Long id, String name, String url, String value,
-            String sdPath, int state, long size, long downloadSize,
-            long downloadState) {
-        this.id = id;
-        this.name = name;
-        this.url = url;
-        this.value = value;
-        this.sdPath = sdPath;
-        this.state = state;
-        this.size = size;
-        this.downloadSize = downloadSize;
-        this.downloadState = downloadState;
-    }
+
 
     @Generated(hash = 1366292585)
     public MattingImage() {
@@ -79,14 +67,6 @@ public class MattingImage {
 
     public void setSdPath(String sdPath) {
         this.sdPath = sdPath;
-    }
-
-    public int getState() {
-        return state;
-    }
-
-    public void setState(int state) {
-        this.state = state;
     }
 
     public long getSize() {

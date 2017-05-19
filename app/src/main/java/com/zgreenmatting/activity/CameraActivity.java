@@ -41,15 +41,20 @@ import com.seu.magicfilter.widget.base.MagicBaseView;
 import com.zgreenmatting.BaseActivity;
 import com.zgreenmatting.R;
 import com.zgreenmatting.adapter.FilterAdapter;
+import com.zgreenmatting.blservice.MattingImageService;
 import com.zgreenmatting.download.DownloadManager;
 import com.zgreenmatting.download.IDownloadStateListener;
 import com.zgreenmatting.download.status.DownloadStatus;
 import com.zgreenmatting.utils.AppData;
 import com.zgreenmatting.utils.GetBigFileMD5;
+import com.zgreenmatting.utils.JSONUtil;
 import com.zgreenmatting.utils.NetworkUtils;
 import com.zgreenmatting.utils.PhoneUtil;
 import com.zgreenmatting.utils.RequestUtil;
 import com.zgreenmatting.utils.ToastUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -233,7 +238,9 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
      * @param objects
      */
     protected void updateView(Object entity, DownloadStatus status, Object... objects) {
-        ((MattingImage)entity).setDownloadState(status.getValue());
+        MattingImage dataItem = (MattingImage)entity;
+        dataItem.setDownloadState(status.getValue());
+        MattingImageService.getInstance().update(dataItem);
         int itemIdx = data.indexOf(entity);
         mAdapter.notifyItemChanged(itemIdx);
     }
@@ -459,12 +466,29 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
     private void getBackdrops(){
         StringRequest request = new StringRequest(Request.Method.POST, RequestUtil.getImageList, new Listener<String>() {
             @Override
-            public void onSuccess(String response) {
-
+            public void onSuccess(final String response) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            JSONObject resp = new JSONObject(response);
+                            if(resp.getInt("code")==200){
+                                List<MattingImage>  data = JSONUtil.toBeans(resp.getJSONArray("data"),MattingImage.class);
+                                for(MattingImage item : data){
+                                    //这里修改数据
+                                    MattingImageService.getInstance().save(item);
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        getBackdropsFromLocal();
+                    }
+                }).start();
             }
             @Override
             public void onError(VolleyError error) {
-
+                getBackdropsFromLocal();
             }
         }){
             @Override
@@ -478,27 +502,50 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
         Volley.getRequestQueue().add(request);
     }
 
-    private void uploadPicInfo(String picPath) {
-        final String hash = GetBigFileMD5.getMD5(new File(picPath));
-        StringRequest request = new StringRequest(Request.Method.POST, RequestUtil.sendImageInfo, new Listener<String>() {
+    private void getBackdropsFromLocal() {
+        runOnUiThread(new Runnable() {
             @Override
-            public void onSuccess(String response) {
+            public void run() {
+                data.clear();
+                data.addAll(MattingImageService.getInstance().getList());
+                mAdapter.notifyDataSetChanged();
+            }
+        });
+    }
 
+    private void uploadPicInfo(final String picPath) {
+        File file = new File(picPath);
+        if(file.exists()){
+            final String hash = GetBigFileMD5.getMD5(file);
+            if(NetworkUtils.isNetworkAvailable(mContext)){
+                StringRequest request = new StringRequest(Request.Method.POST, RequestUtil.sendImageInfo, new Listener<String>() {
+                    @Override
+                    public void onSuccess(String response) {
+                        deleteTmpPicInfo(picPath,hash);
+                    }
+                    @Override
+                    public void onError(VolleyError error) {
+                        saveTmpPicInfo(picPath,hash);
+                    }
+                }){
+                    @Override
+                    protected Map<String, String> getParams() throws AuthFailureError {
+                        Map<String, String> map = new HashMap<String, String>();
+                        map.put("account", AppData.getString(mContext,AppData.ACCOUNT));
+                        map.put("value", hash);
+                        map.put("sim", PhoneUtil.getDevicesID(mContext));
+                        return map;
+                    }
+                };
+                Volley.getRequestQueue().add(request);
+            }else {
+                saveTmpPicInfo(picPath,hash);
             }
-            @Override
-            public void onError(VolleyError error) {
+        }
+    }
 
-            }
-        }){
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("account", AppData.getString(mContext,AppData.ACCOUNT));
-                map.put("value", hash);
-                map.put("sim", PhoneUtil.getDevicesID(mContext));
-                return map;
-            }
-        };
-        Volley.getRequestQueue().add(request);
+    private void saveTmpPicInfo(String picPath, String hash) {
+    }
+    private void deleteTmpPicInfo(String picPath, String hash) {
     }
 }
