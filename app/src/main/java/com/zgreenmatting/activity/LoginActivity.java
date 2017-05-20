@@ -8,11 +8,12 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-
 import com.zgreenmatting.BaseFragmentActivity;
 import com.zgreenmatting.R;
 import com.zgreenmatting.fragment.LoginFragment;
 import com.zgreenmatting.fragment.RegisterFragment;
+import com.zgreenmatting.update.UpdateHelper;
+import com.zgreenmatting.utils.RequestUtil;
 
 import java.util.ArrayList;
 
@@ -63,6 +64,7 @@ public class LoginActivity extends BaseFragmentActivity {
                 }
             }
         });
+        onUpdate();
     }
 
     @Override
@@ -110,5 +112,16 @@ public class LoginActivity extends BaseFragmentActivity {
 
     public void setCurrentPage(int page){
         viewpager.setCurrentItem(page);
+    }
+
+    /**
+     * 检查更新
+     */
+    public void onUpdate(){
+        UpdateHelper updateHelper = new UpdateHelper.Builder(this)
+                .checkUrl(RequestUtil.updateCode)
+                .isAutoInstall(true) //设置为false需在下载完手动点击安装;默认值为true，下载后自动安装。
+                .build();
+        updateHelper.check();
     }
 }

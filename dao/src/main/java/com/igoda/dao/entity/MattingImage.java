@@ -23,6 +23,23 @@ public class MattingImage {
     private String sdPath;//下载本地路径
     private int downloadState;//下载状态
 
+    @Generated(hash = 1486791468)
+    public MattingImage(Long id, String url, String value, String ext,
+            String createTime, String name, String sdPath, int downloadState) {
+        this.id = id;
+        this.url = url;
+        this.value = value;
+        this.ext = ext;
+        this.createTime = createTime;
+        this.name = name;
+        this.sdPath = sdPath;
+        this.downloadState = downloadState;
+    }
+
+    @Generated(hash = 1366292585)
+    public MattingImage() {
+    }
+
     public Long getId() {
         return id;
     }
