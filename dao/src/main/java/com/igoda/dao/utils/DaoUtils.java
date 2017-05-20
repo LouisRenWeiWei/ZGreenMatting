@@ -14,7 +14,7 @@ import org.greenrobot.greendao.query.QueryBuilder;
  */
 
 public class DaoUtils {
-    private static final String DEFAULT_DB_NAME = "igoda.db";
+    private static final String DEFAULT_DB_NAME = "greenmatting.db";
     private static volatile DaoMaster daoMaster;
 
     private static Context mContext;

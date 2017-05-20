@@ -480,14 +480,20 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
                             //[{"value":"cc9a1852b09bd828ae2fefe3889dc44a","ext":"jpg","url":"http://tv.xxpost.com/camera/backdrop/cc9a1852b09bd828ae2fefe3889dc44a.jpg","createTime":"2017-05-19 16:27"}]
                             JSONArray data = new JSONArray(response);
                             List<MattingImage> mattingImages = JSONUtil.toBeans(data, MattingImage.class);
+                            //
+                            List<String> exist = new ArrayList<String>();
                             for (MattingImage item : mattingImages) {
+                                item.setName(item.getValue()+"."+(item.getExt()!=null?item.getExt():"jpg"));
                                 //这里修改数据
                                 MattingImageService.getInstance().save(item);
+                                exist.add(item.getUrl());
                             }
+                            //需要删除已经被服务器删除的图片
+                            MattingImageService.getInstance().deleteWithout(exist);
+                            getBackdropsFromLocal();//更新ui数据
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        getBackdropsFromLocal();
                     }
                 }).start();
             }

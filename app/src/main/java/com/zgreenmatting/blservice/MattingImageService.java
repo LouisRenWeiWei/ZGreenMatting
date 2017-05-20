@@ -1,13 +1,17 @@
 package com.zgreenmatting.blservice;
 
+import android.text.TextUtils;
+
 import com.igoda.dao.MattingImageDao;
 import com.igoda.dao.TempImageDao;
 import com.igoda.dao.entity.MattingImage;
 import com.igoda.dao.entity.TempImage;
 import com.igoda.dao.utils.DaoUtils;
 import com.zgreenmatting.download.status.DownloadStatus;
+import com.zgreenmatting.download.utils.FileUtils;
 import com.zgreenmatting.entity.ProgressInfo;
 
+import java.io.File;
 import java.util.List;
 
 
@@ -30,16 +34,39 @@ public class MattingImageService {
         MattingImageDao dao = DaoUtils.getDaoSession().getMattingImageDao();
         MattingImage tmp = dao.queryBuilder().where(MattingImageDao.Properties.Url.eq(mattingImage.getUrl())).unique();
         if(tmp!=null){
+            //url相同，但是value不一样
             if(!mattingImage.getValue().equals(tmp.getValue())){
-                mattingImage.setId(tmp.getId());
-                dao.update(mattingImage);
-            }else{
+                if(!TextUtils.isEmpty(tmp.getSdPath())){
+                    FileUtils.deleteFile(tmp.getSdPath());
+                }
+                dao.delete(tmp);
+                dao.save(mattingImage);
+            }
+            /*
+            else{//url 和value都一样不需要做什么操作
+                tmp.setName(mattingImage.getName());
+                tmp.setCreateTime(mattingImage.getCreateTime());
+                tmp.setExt(mattingImage.getExt());
                 dao.update(tmp);
             }
+            */
         }else {
             dao.save(mattingImage);
         }
     }
+    //删除除这些之外的
+    public void deleteWithout(List<String> exist) {
+        MattingImageDao dao = DaoUtils.getDaoSession().getMattingImageDao();
+        List<MattingImage> needDelete = dao.queryBuilder().where(MattingImageDao.Properties.Url.notIn(exist)).list();
+        for (MattingImage item :needDelete) {
+            if(!TextUtils.isEmpty(item.getSdPath())){
+                FileUtils.deleteFile(item.getSdPath());
+            }
+            dao.delete(item);
+        }
+    }
+
+
     //修改
     public void update(MattingImage mattingImage){
         MattingImageDao dao = DaoUtils.getDaoSession().getMattingImageDao();
@@ -81,6 +108,7 @@ public class MattingImageService {
     public TempImage getNextTmpImage() {
         return DaoUtils.getDaoSession().getTempImageDao().queryBuilder().offset(0).limit(1).unique();
     }
+
 
 
 }

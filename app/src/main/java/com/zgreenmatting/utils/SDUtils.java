@@ -16,4 +16,8 @@ public class SDUtils {
     public static String getGlideSDPath(){
         return  "file://"+Environment.getExternalStorageDirectory().getPath()+"/matting";
     }
+
+    public static String getDBPath() {
+        return  Environment.getExternalStorageDirectory().getPath()+"/matting/data/matting.db";
+    }
 }

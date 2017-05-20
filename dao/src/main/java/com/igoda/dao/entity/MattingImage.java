@@ -21,24 +21,7 @@ public class MattingImage {
     private String name;//背景名称   Deprecated
 
     private String sdPath;//下载本地路径
-    private long downloadState;//下载状态
-
-    @Generated(hash = 926419076)
-    public MattingImage(Long id, String url, String value, String ext,
-            String createTime, String name, String sdPath, long downloadState) {
-        this.id = id;
-        this.url = url;
-        this.value = value;
-        this.ext = ext;
-        this.createTime = createTime;
-        this.name = name;
-        this.sdPath = sdPath;
-        this.downloadState = downloadState;
-    }
-
-    @Generated(hash = 1366292585)
-    public MattingImage() {
-    }
+    private int downloadState;//下载状态
 
     public Long getId() {
         return id;
@@ -96,11 +79,11 @@ public class MattingImage {
         this.sdPath = sdPath;
     }
 
-    public long getDownloadState() {
+    public int getDownloadState() {
         return downloadState;
     }
 
-    public void setDownloadState(long downloadState) {
+    public void setDownloadState(int downloadState) {
         this.downloadState = downloadState;
     }
 }

@@ -159,7 +159,7 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/filter_listView"
             android:layout_width="match_parent"
-            android:layout_height="94dp"
+            android:layout_height="84dp"
             android:overScrollMode="never"
             android:scrollbars="none" />
 
