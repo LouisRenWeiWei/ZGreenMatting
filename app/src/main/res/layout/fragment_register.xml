@@ -73,7 +73,7 @@
         android:id="@+id/tv_register"
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:background="@color/app_color"
+        android:background="@drawable/btn_bg"
         android:gravity="center"
         android:layout_gravity="center_horizontal"
         android:text="注册"

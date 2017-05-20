@@ -2,20 +2,18 @@ package com.zgreenmatting.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.igoda.dao.entity.MattingImage;
-import com.seu.magicfilter.filter.helper.MagicFilterType;
 import com.zgreenmatting.R;
 import com.zgreenmatting.download.DownloadManager;
 import com.zgreenmatting.download.status.DownloadStatus;
-import com.zgreenmatting.helper.FilterTypeHelper;
 
 import java.util.List;
 
@@ -43,43 +41,40 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterHold
         View view = LayoutInflater.from(context).inflate(R.layout.filter_item_layout,
                 parent, false);
         FilterHolder viewHolder = new FilterHolder(view);
-        viewHolder.thumbImage = (ImageView) view
-                .findViewById(R.id.filter_thumb_image);
-        viewHolder.filterName = (TextView) view
-                .findViewById(R.id.filter_thumb_name);
-        viewHolder.filterRoot = (FrameLayout) view
-                .findViewById(R.id.filter_root);
-        viewHolder.thumbSelected = (FrameLayout) view
-                .findViewById(R.id.filter_thumb_selected);
-        viewHolder.thumbSelected_bg = view.
-                findViewById(R.id.filter_thumb_selected_bg);
+        viewHolder.iv_thumb = (ImageView) view
+                .findViewById(R.id.iv_thumb);
+        viewHolder.iv_selected = (ImageView) view
+                .findViewById(R.id.iv_selected);
+        viewHolder.fl_item = (FrameLayout) view
+                .findViewById(R.id.fl_item);
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(FilterHolder holder, final int position) {
         MattingImage item = data.get(position);
-        Glide.with(context).load(item.getSdPath()).into(holder.thumbImage);
-        holder.filterName.setText(item.getName());
-        if (position == selected) {
-            holder.thumbSelected.setVisibility(View.VISIBLE);
-            holder.thumbSelected_bg.setAlpha(0.7f);
-        } else {
-            holder.thumbSelected.setVisibility(View.GONE);
+        if(!TextUtils.isEmpty(item.getSdPath())){
+            Glide.with(context).load(item.getSdPath()).into(holder.iv_thumb);
+        }else{
+            //未下载
         }
 
-        holder.filterRoot.setOnClickListener(new View.OnClickListener() {
+        if (position == selected) {
+            holder.iv_selected.setVisibility(View.VISIBLE);
+        } else {
+            holder.iv_selected.setVisibility(View.GONE);
+        }
+
+        holder.fl_item.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                if (selected == position)
-                    return;
-                int lastSelected = selected;
-                selected = position;
-                notifyItemChanged(lastSelected);
-                notifyItemChanged(position);
-                onFilterChangeListener.onFilterChanged();
-                onFilterChangeListener.onChangePostion(position);
+                if (selected != position){
+                    notifyItemChanged(selected);
+                    notifyItemChanged(position);
+                    selected = position;
+                    onFilterChangeListener.onChangePostion(position);
+                }
             }
         });
 
@@ -110,11 +105,9 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterHold
     }
 
     class FilterHolder extends RecyclerView.ViewHolder {
-        ImageView thumbImage;//缩略图
-        TextView filterName;//名称
-        FrameLayout thumbSelected;
-        FrameLayout filterRoot;
-        View thumbSelected_bg;//选择背景
+        ImageView iv_thumb;//缩略图
+        ImageView iv_selected;//选择
+        FrameLayout fl_item;
 
         public FilterHolder(View itemView) {
             super(itemView);
@@ -122,8 +115,6 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterHold
     }
 
     public interface onFilterChangeListener {
-        void onFilterChanged();
-
         void onChangePostion(int position);
     }
 

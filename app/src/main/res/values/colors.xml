@@ -21,6 +21,7 @@
     <color name="filter_color_brown_light">#ff9933</color>
     <color name="app_bg">#e5e5e5</color>
     <color name="app_color">#008B45</color>
+    <color name="app_color_light">#22e419</color>
     <color name="app_text_color">#474747</color>
     <color name="color_a3">#a3a3a3</color>
 </resources>

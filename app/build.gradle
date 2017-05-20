@@ -59,6 +59,8 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     compile project(':network')
     compile project(path: ':dao')
+    //compile 'com.github.navasmdc:MaterialDesign:1.5@aar'
+    compile 'com.github.rey5137:material:1.2.4'
 
 
 }

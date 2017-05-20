@@ -5,6 +5,8 @@ import com.igoda.dao.TempImageDao;
 import com.igoda.dao.entity.MattingImage;
 import com.igoda.dao.entity.TempImage;
 import com.igoda.dao.utils.DaoUtils;
+import com.zgreenmatting.download.status.DownloadStatus;
+import com.zgreenmatting.entity.ProgressInfo;
 
 import java.util.List;
 
@@ -44,6 +46,16 @@ public class MattingImageService {
         dao.update(mattingImage);
     }
 
+    public ProgressInfo getProgressInfo() {
+        ProgressInfo info = new ProgressInfo();
+        MattingImageDao dao = DaoUtils.getDaoSession().getMattingImageDao();
+        info.setTotal(dao.queryBuilder().count());
+        info.setFinished(dao.queryBuilder().where(
+                MattingImageDao.Properties.DownloadState.eq(DownloadStatus.DONE)
+        ).count());
+        return info;
+    }
+
     public int getLocalUnuploadCount() {
         return DaoUtils.getDaoSession().getTempImageDao().queryBuilder().list().size();
     }
@@ -69,4 +81,6 @@ public class MattingImageService {
     public TempImage getNextTmpImage() {
         return DaoUtils.getDaoSession().getTempImageDao().queryBuilder().offset(0).limit(1).unique();
     }
+
+
 }
