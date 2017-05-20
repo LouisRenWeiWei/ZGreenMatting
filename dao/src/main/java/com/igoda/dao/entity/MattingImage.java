@@ -15,15 +15,26 @@ public class MattingImage {
     private Long id;//id
     private String url;//服务器路径
     private String value;//hash值
+    private String ext;
+    private String createTime;//创建时间
 
     private String name;//背景名称   Deprecated
 
     private String sdPath;//下载本地路径
-    private long size;
-    private long downloadSize;//已经下载的大小
     private long downloadState;//下载状态
 
-
+    @Generated(hash = 926419076)
+    public MattingImage(Long id, String url, String value, String ext,
+            String createTime, String name, String sdPath, long downloadState) {
+        this.id = id;
+        this.url = url;
+        this.value = value;
+        this.ext = ext;
+        this.createTime = createTime;
+        this.name = name;
+        this.sdPath = sdPath;
+        this.downloadState = downloadState;
+    }
 
     @Generated(hash = 1366292585)
     public MattingImage() {
@@ -35,14 +46,6 @@ public class MattingImage {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getUrl() {
@@ -61,28 +64,36 @@ public class MattingImage {
         this.value = value;
     }
 
+    public String getExt() {
+        return ext;
+    }
+
+    public void setExt(String ext) {
+        this.ext = ext;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getSdPath() {
         return sdPath;
     }
 
     public void setSdPath(String sdPath) {
         this.sdPath = sdPath;
-    }
-
-    public long getSize() {
-        return size;
-    }
-
-    public void setSize(long size) {
-        this.size = size;
-    }
-
-    public long getDownloadSize() {
-        return downloadSize;
-    }
-
-    public void setDownloadSize(long downloadSize) {
-        this.downloadSize = downloadSize;
     }
 
     public long getDownloadState() {

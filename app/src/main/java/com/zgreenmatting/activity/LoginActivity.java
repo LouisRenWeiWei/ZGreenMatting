@@ -107,4 +107,8 @@ public class LoginActivity extends BaseFragmentActivity {
             return list.get(arg0);
         }
     }
+
+    public void setCurrentPage(int page){
+        viewpager.setCurrentItem(page);
+    }
 }

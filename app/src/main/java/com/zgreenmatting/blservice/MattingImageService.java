@@ -1,9 +1,10 @@
 package com.zgreenmatting.blservice;
 
 import com.igoda.dao.MattingImageDao;
+import com.igoda.dao.TempImageDao;
 import com.igoda.dao.entity.MattingImage;
+import com.igoda.dao.entity.TempImage;
 import com.igoda.dao.utils.DaoUtils;
-import com.zgreenmatting.download.status.DownloadStatus;
 
 import java.util.List;
 
@@ -43,4 +44,29 @@ public class MattingImageService {
         dao.update(mattingImage);
     }
 
+    public int getLocalUnuploadCount() {
+        return DaoUtils.getDaoSession().getTempImageDao().queryBuilder().list().size();
+    }
+
+    public void saveTmpImage(String picPath, String hash) {
+        TempImageDao dao = DaoUtils.getDaoSession().getTempImageDao();
+        TempImage tmp = dao.queryBuilder().where(TempImageDao.Properties.Value.eq(hash)).unique();
+        if(tmp==null){
+            tmp = new TempImage();
+            tmp.setSdPath(picPath);
+            tmp.setValue(hash);
+            dao.save(tmp);
+        }else {
+            tmp.setSdPath(picPath);
+            dao.update(tmp);
+        }
+    }
+
+    public void deleteTmpImage(TempImage tempImage) {
+        DaoUtils.getDaoSession().getTempImageDao().delete(tempImage);
+    }
+
+    public TempImage getNextTmpImage() {
+        return DaoUtils.getDaoSession().getTempImageDao().queryBuilder().offset(0).limit(1).unique();
+    }
 }

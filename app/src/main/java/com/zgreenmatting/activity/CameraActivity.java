@@ -31,6 +31,7 @@ import com.android.volley.listener.Listener;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.igoda.dao.entity.MattingImage;
+import com.igoda.dao.entity.TempImage;
 import com.seu.magicfilter.MagicEngine;
 import com.seu.magicfilter.filter.advanced.MagicAAFilter;
 import com.seu.magicfilter.filter.base.gpuimage.GPUImageFilter;
@@ -53,6 +54,7 @@ import com.zgreenmatting.utils.PhoneUtil;
 import com.zgreenmatting.utils.RequestUtil;
 import com.zgreenmatting.utils.ToastUtils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -160,9 +162,8 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            int progress = (int)(((double)size / (double)((MattingImage)entity).getSize())  * 100);
-                            ((MattingImage)entity).setDownloadSize(size);
-                            updateView(entity, DownloadStatus.WAIT, progress);
+//                            updateView(entity, DownloadStatus.WAIT);
+                            //准备下载
                         }
                     });
                 }
@@ -172,9 +173,7 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            int progress = (int)(((double)size / (double)((MattingImage)entity).getSize())  * 100);
-                            ((MattingImage)entity).setDownloadSize(size);
-                            updateView(entity, DownloadStatus.DLING, progress);
+                            //updateView(entity, DownloadStatus.DLING);
                         }
                     });
                 }
@@ -184,7 +183,9 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            updateView(entity, DownloadStatus.DONE, savePath);
+                            MattingImage data = (MattingImage) entity;
+                            data.setSdPath(savePath);
+                            updateView(entity, DownloadStatus.DONE);
                         }
                     });
                 }
@@ -194,7 +195,7 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            updateView(entity, DownloadStatus.ERROR, msg);
+//                            updateView(entity, DownloadStatus.ERROR);
                         }
                     });
                 }
@@ -205,9 +206,7 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            int progress = (int)(((double)size / (double)((MattingImage)entity).getSize())  * 100);
-                            ((MattingImage)entity).setDownloadSize(size);
-                            updateView(entity, DownloadStatus.PAUSE, progress);
+                            updateView(entity, DownloadStatus.PAUSE);
                         }
                     });
                 }
@@ -235,9 +234,8 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
      * 更新item
      * @param entity
      * @param status
-     * @param objects
      */
-    protected void updateView(Object entity, DownloadStatus status, Object... objects) {
+    protected void updateView(Object entity, DownloadStatus status) {
         MattingImage dataItem = (MattingImage)entity;
         dataItem.setDownloadState(status.getValue());
         MattingImageService.getInstance().update(dataItem);
@@ -269,7 +267,16 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
                 switchMode();
                 break;
             case R.id.btn_camera_shutter:
-
+                //这个地方检查一下，本地如果超过15个未上传图片，提示用户打开网络进行上传操作
+                int unuploadCount = MattingImageService.getInstance().getLocalUnuploadCount();
+                if(unuploadCount>15){
+                    ToastUtils.showCustomerToast(mContext,"请打开网络，上传本地已拍照照片");
+                    return;
+                }
+                //如果本地有离线数据就立马上传一次
+                if(NetworkUtils.isNetworkAvailable(mContext)&&unuploadCount>0){
+                    uploadPicInfo();
+                }
                 if (PermissionChecker.checkSelfPermission(CameraActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         == PackageManager.PERMISSION_DENIED) {
                     ActivityCompat.requestPermissions(CameraActivity.this, new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE }, 1);
@@ -333,7 +340,7 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
             public void onSaved(String result) {
                 //
                 if(!TextUtils.isEmpty(result)){
-                    uploadPicInfo(result);
+                    saveTmpPicInfo(result);
                 }
             }
         });
@@ -464,20 +471,19 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
     //////////////////
     //获取背景数据
     private void getBackdrops(){
-        StringRequest request = new StringRequest(Request.Method.POST, RequestUtil.getImageList, new Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, RequestUtil.backdrops, new Listener<String>() {
             @Override
             public void onSuccess(final String response) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         try {
-                            JSONObject resp = new JSONObject(response);
-                            if(resp.getInt("code")==200){
-                                List<MattingImage>  data = JSONUtil.toBeans(resp.getJSONArray("data"),MattingImage.class);
-                                for(MattingImage item : data){
-                                    //这里修改数据
-                                    MattingImageService.getInstance().save(item);
-                                }
+                            //[{"value":"cc9a1852b09bd828ae2fefe3889dc44a","ext":"jpg","url":"http://tv.xxpost.com/camera/backdrop/cc9a1852b09bd828ae2fefe3889dc44a.jpg","createTime":"2017-05-19 16:27"}]
+                            JSONArray data = new JSONArray(response);
+                            List<MattingImage>  mattingImages = JSONUtil.toBeans(data,MattingImage.class);
+                            for(MattingImage item : mattingImages){
+                                //这里修改数据
+                                MattingImageService.getInstance().save(item);
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -495,7 +501,7 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("account", AppData.getString(mContext,AppData.ACCOUNT));
-                map.put("sim", PhoneUtil.getDevicesID(mContext));
+                map.put("device_id", PhoneUtil.getDevicesID(mContext));
                 return map;
             }
         };
@@ -513,39 +519,46 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
         });
     }
 
-    private void uploadPicInfo(final String picPath) {
-        File file = new File(picPath);
-        if(file.exists()){
-            final String hash = GetBigFileMD5.getMD5(file);
-            if(NetworkUtils.isNetworkAvailable(mContext)){
-                StringRequest request = new StringRequest(Request.Method.POST, RequestUtil.sendImageInfo, new Listener<String>() {
-                    @Override
-                    public void onSuccess(String response) {
-                        deleteTmpPicInfo(picPath,hash);
+    private void uploadPicInfo() {
+        final TempImage tempImage = MattingImageService.getInstance().getNextTmpImage();
+        if(NetworkUtils.isNetworkAvailable(mContext)&&tempImage!=null){
+            StringRequest request = new StringRequest(Request.Method.POST, RequestUtil.sendImageInfo, new Listener<String>() {
+                @Override
+                public void onSuccess(String response) {
+                    try {
+                        JSONObject obj = new JSONObject(response);
+                        if (obj.getInt("errCode") ==1) {
+                            MattingImageService.getInstance().deleteTmpImage(tempImage);
+                        }else {
+                            ToastUtils.showSystemToast(mContext,obj.getString("desc"));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    @Override
-                    public void onError(VolleyError error) {
-                        saveTmpPicInfo(picPath,hash);
-                    }
-                }){
-                    @Override
-                    protected Map<String, String> getParams() throws AuthFailureError {
-                        Map<String, String> map = new HashMap<String, String>();
-                        map.put("account", AppData.getString(mContext,AppData.ACCOUNT));
-                        map.put("value", hash);
-                        map.put("sim", PhoneUtil.getDevicesID(mContext));
-                        return map;
-                    }
-                };
-                Volley.getRequestQueue().add(request);
-            }else {
-                saveTmpPicInfo(picPath,hash);
-            }
+                }
+                @Override
+                public void onError(VolleyError error) {
+                }
+            }){
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> map = new HashMap<String, String>();
+                    map.put("account", AppData.getString(mContext,AppData.ACCOUNT));
+                    map.put("value", tempImage.getValue());
+                    map.put("device_id", PhoneUtil.getDevicesID(mContext));
+                    return map;
+                }
+            };
+            Volley.getRequestQueue().add(request);
         }
     }
-
-    private void saveTmpPicInfo(String picPath, String hash) {
-    }
-    private void deleteTmpPicInfo(String picPath, String hash) {
+    //先把数据保存到本地,然后再上传
+    private void saveTmpPicInfo(String picPath) {
+        File file = new File(picPath);
+        if(file.exists()){
+            String hash = GetBigFileMD5.getMD5(file);
+            MattingImageService.getInstance().saveTmpImage(picPath,hash);
+            uploadPicInfo();
+        }
     }
 }

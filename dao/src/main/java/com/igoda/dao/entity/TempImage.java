@@ -16,6 +16,17 @@ public class TempImage {
     private String value;//hash值
     private String sdPath;
 
+    @Generated(hash = 1772981949)
+    public TempImage(Long id, String value, String sdPath) {
+        this.id = id;
+        this.value = value;
+        this.sdPath = sdPath;
+    }
+
+    @Generated(hash = 1182085286)
+    public TempImage() {
+    }
+
     public Long getId() {
         return id;
     }

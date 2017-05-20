@@ -3,15 +3,31 @@
     android:id="@+id/layout_filter_tab"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
-
+    android:orientation="vertical"
+    android:background="@android:color/white">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:orientation="horizontal"
+        >
+        <TextView
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:text="kb"/>
+        <ProgressBar
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+        <TextView
+            android:layout_width="30dp"
+            android:layout_height="match_parent" />
+    </LinearLayout>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/filter_listView"
         android:layout_width="match_parent"
         android:layout_height="94dip"
         android:padding="5.0dip"
-        android:scrollbars="none"
-        android:background="@android:color/white"/>
+        android:scrollbars="none"/>
 
     <View 
         android:layout_width="match_parent"
@@ -19,7 +35,6 @@
         android:background="@android:color/black"/>
 
     <ImageView
-        android:background="@android:color/white"
         android:id="@+id/btn_camera_closefilter" 
         android:layout_width="match_parent" 
         android:layout_height="26dip"

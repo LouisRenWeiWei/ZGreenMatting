@@ -12,6 +12,7 @@ import com.android.volley.listener.Listener;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.zgreenmatting.R;
+import com.zgreenmatting.activity.LoginActivity;
 import com.zgreenmatting.utils.AppData;
 import com.zgreenmatting.utils.NetworkUtils;
 import com.zgreenmatting.utils.PhoneUtil;
@@ -75,7 +76,7 @@ public class RegisterFragment extends BaseFragment {
             ToastUtils.showCustomerToast(mContext, "请输入确认密码");
             return;
         }
-        if (passwdConfirm.equals(passwd)) {
+        if (!passwdConfirm.equals(passwd)) {
             ToastUtils.showCustomerToast(mContext, "密码输入不一致");
             return;
         }
@@ -87,12 +88,18 @@ public class RegisterFragment extends BaseFragment {
             @Override
             public void onSuccess(String response) {
                 try {
+                    //{"errCode":1,"desc":"注册成功，请您登录拍照吧！"}
                     JSONObject obj = new JSONObject(response);
-                    if (obj.getInt("code") == 200) {
-                        AppData.saveString(mContext, AppData.ACCOUNT, account.toUpperCase());
-                        AppData.saveString(mContext, AppData.PASSWORD, passwd);
+                    if (obj.getInt("errCode") == 1) {
+                        //注册完成之后再重新登录
+                        ToastUtils.showSystemToast(mContext,obj.getString("desc"));
+                        //
+                        et_account.setText("");
+                        et_confirm_password.setText("");
+                        et_password.setText("");
+                        ((LoginActivity)getActivity()).setCurrentPage(0);
                     }else {
-                        ToastUtils.showSystemToast(mContext,obj.getString("msg"));
+                        ToastUtils.showSystemToast(mContext,obj.getString("desc"));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

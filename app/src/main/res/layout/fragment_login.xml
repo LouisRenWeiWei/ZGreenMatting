@@ -23,7 +23,8 @@
         android:maxLines="1"
         android:textColor="@color/app_text_color"
         android:textColorHint="#a3a3a3"
-        android:textSize="15sp"/>
+        android:textSize="15sp"
+        android:textCursorDrawable="@drawable/cursor"/>
 
 
     <EditText
@@ -44,7 +45,8 @@
         android:maxLines="1"
         android:textColor="@color/app_text_color"
         android:textColorHint="#a3a3a3"
-        android:textSize="15sp"/>
+        android:textSize="15sp"
+        android:textCursorDrawable="@drawable/cursor"/>
 
     <TextView
         android:id="@+id/tv_login"

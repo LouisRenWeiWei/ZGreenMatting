@@ -2,6 +2,7 @@ package com.zgreenmatting.fragment;
 
 import android.content.Intent;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -13,9 +14,12 @@ import com.android.volley.listener.Listener;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.zgreenmatting.R;
+import com.zgreenmatting.activity.LoginActivity;
 import com.zgreenmatting.activity.MainActivity;
+import com.zgreenmatting.utils.AppData;
 import com.zgreenmatting.utils.NetworkUtils;
 import com.zgreenmatting.utils.PhoneUtil;
+import com.zgreenmatting.utils.RequestUtil;
 import com.zgreenmatting.utils.ToastUtils;
 
 import org.json.JSONObject;
@@ -69,15 +73,18 @@ public class LoginFragment extends BaseFragment {
             ToastUtils.showCustomerToast(mContext,"请检查网络连接");
             return;
         }
-        StringRequest request = new StringRequest(Request.Method.POST, "", new Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, RequestUtil.login, new Listener<String>() {
             @Override
             public void onSuccess(String response) {
                 try {
                     JSONObject obj = new JSONObject(response);
-                    if (obj.getInt("code") == 200) {
+                    if (obj.getInt("errCode") ==1) {
+                        AppData.saveString(mContext, AppData.ACCOUNT, account.toUpperCase());
+                        AppData.saveString(mContext, AppData.PASSWORD, passwd);
                         startActivity(new Intent(mContext, MainActivity.class));
+                        ((LoginActivity)getActivity()).finish();
                     }else {
-                        ToastUtils.showSystemToast(mContext,obj.getString("msg"));
+                        ToastUtils.showSystemToast(mContext,obj.getString("desc"));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -86,7 +93,7 @@ public class LoginFragment extends BaseFragment {
 
             @Override
             public void onError(VolleyError error) {
-
+                Log.d("error","");
             }
         }){
             @Override
@@ -107,6 +114,7 @@ public class LoginFragment extends BaseFragment {
 
     @Override
     protected void preInitData() {
-
+        et_account.setText(AppData.getString(mContext, AppData.ACCOUNT));
+        et_password.setText(AppData.getString(mContext, AppData.PASSWORD));
     }
 }
