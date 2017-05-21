@@ -42,6 +42,8 @@ public class LoginFragment extends BaseFragment {
     EditText et_password;
     @BindView(R.id.tv_login)
     TextView tv_login;
+    @BindView(R.id.tv_version)
+    TextView tv_version;
 
 
     @Override
@@ -119,5 +121,6 @@ public class LoginFragment extends BaseFragment {
     protected void preInitData() {
         et_account.setText(AppData.getString(mContext, AppData.ACCOUNT));
         et_password.setText(AppData.getString(mContext, AppData.PASSWORD));
+        tv_version.setText("当前版本:"+PhoneUtil.getVersionName(mContext));
     }
 }
