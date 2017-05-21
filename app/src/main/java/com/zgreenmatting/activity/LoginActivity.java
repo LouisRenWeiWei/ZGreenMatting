@@ -120,7 +120,8 @@ public class LoginActivity extends BaseFragmentActivity {
     public void onUpdate(){
         UpdateHelper updateHelper = new UpdateHelper.Builder(this)
                 .checkUrl(RequestUtil.updateCode)
-                .isAutoInstall(true) //设置为false需在下载完手动点击安装;默认值为true，下载后自动安装。
+                .isHintNewVersion(false)    //没有新版本时不提示
+                .isAutoInstall(true)    //设置为false需在下载完手动点击安装;默认值为true，下载后自动安装。
                 .build();
         updateHelper.check();
     }
