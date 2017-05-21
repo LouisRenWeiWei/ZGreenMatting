@@ -31,7 +31,7 @@ public class MattingImageDao extends AbstractDao<MattingImage, Long> {
         public final static Property CreateTime = new Property(4, String.class, "createTime", false, "CREATE_TIME");
         public final static Property Name = new Property(5, String.class, "name", false, "NAME");
         public final static Property SdPath = new Property(6, String.class, "sdPath", false, "SD_PATH");
-        public final static Property DownloadState = new Property(7, long.class, "downloadState", false, "DOWNLOAD_STATE");
+        public final static Property DownloadState = new Property(7, int.class, "downloadState", false, "DOWNLOAD_STATE");
     }
 
 
@@ -160,7 +160,7 @@ public class MattingImageDao extends AbstractDao<MattingImage, Long> {
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // createTime
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // name
             cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // sdPath
-            cursor.getLong(offset + 7) // downloadState
+            cursor.getInt(offset + 7) // downloadState
         );
         return entity;
     }
@@ -174,7 +174,7 @@ public class MattingImageDao extends AbstractDao<MattingImage, Long> {
         entity.setCreateTime(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
         entity.setName(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
         entity.setSdPath(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
-        entity.setDownloadState(cursor.getLong(offset + 7));
+        entity.setDownloadState(cursor.getInt(offset + 7));
      }
     
     @Override

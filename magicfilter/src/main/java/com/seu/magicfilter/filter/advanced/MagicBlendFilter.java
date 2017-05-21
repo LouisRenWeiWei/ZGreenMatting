@@ -124,10 +124,5 @@ public class MagicBlendFilter extends GPUImageFilter {
 
     protected void onInitialized(){
         super.onInitialized();
-        runOnDraw(new Runnable(){
-            public void run(){
-                extraTextureHandle = OpenGlUtils.loadTexture(MagicParams.context, "1.jpg");
-            }
-        });
     }
 }

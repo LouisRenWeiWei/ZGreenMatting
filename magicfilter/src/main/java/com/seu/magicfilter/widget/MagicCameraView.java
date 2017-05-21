@@ -41,6 +41,21 @@ public class MagicCameraView extends MagicBaseView {
         scaleType = ScaleType.CENTER_CROP;
     }
 
+    private  OnCameraInitedListener onCameraInitedListener;
+
+    public OnCameraInitedListener getOnCameraInitedListener() {
+        return onCameraInitedListener;
+    }
+
+    public void setOnCameraInitedListener(OnCameraInitedListener onCameraInitedListener) {
+        this.onCameraInitedListener = onCameraInitedListener;
+    }
+
+    public interface OnCameraInitedListener {
+
+        public void onCameraInited();
+    }
+
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         super.onSurfaceCreated(gl, config);
@@ -55,6 +70,7 @@ public class MagicCameraView extends MagicBaseView {
                 surfaceTexture.setOnFrameAvailableListener(onFrameAvailableListener);
             }
         }
+        if(onCameraInitedListener!=null)onCameraInitedListener.onCameraInited();
     }
 
     @Override
@@ -100,11 +116,6 @@ public class MagicCameraView extends MagicBaseView {
             requestRender();
         }
     };
-
-    @Override
-    public void setFilter() {
-        super.setFilter();
-    }
 
     private void openCamera(){
         if(CameraEngine.getCamera() == null)

@@ -59,6 +59,7 @@ public abstract class MagicBaseView extends GLSurfaceView implements GLSurfaceVi
 
     protected  OnFilterChangedListener mOnFilterChangedListener = null;
 
+
     public interface OnFilterChangedListener<T> {
 
         public void filterChange(GPUImageFilter filter);
@@ -121,14 +122,14 @@ public abstract class MagicBaseView extends GLSurfaceView implements GLSurfaceVi
             mOnFilterChangedListener.filterChange(filter);
     }
 
-    public void setFilter(){
+    public void setFilter(final boolean needFilter){
         queueEvent(new Runnable() {
             @Override
             public void run() {
                 if (filter != null)
                     filter.destroy();
                 filter = null;
-                filter = MagicFilterFactory.initFilters();
+                filter = MagicFilterFactory.initFilters(needFilter);
                 if (filter != null)
                     filter.init();
                 onFilterChanged();

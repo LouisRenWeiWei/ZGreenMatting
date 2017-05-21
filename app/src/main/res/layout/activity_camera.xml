@@ -118,9 +118,10 @@
         android:layout_alignParentBottom="true"
         android:background="@android:color/white"
         android:orientation="vertical"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <LinearLayout
+            android:id="@+id/ll_download_info"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:orientation="horizontal">
@@ -155,11 +156,10 @@
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:background="@color/app_color" />
-
         <android.support.v7.widget.RecyclerView
             android:id="@+id/filter_listView"
             android:layout_width="match_parent"
-            android:layout_height="84dp"
+            android:layout_height="94dp"
             android:overScrollMode="never"
             android:scrollbars="none" />
 

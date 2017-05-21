@@ -7,11 +7,10 @@ import com.igoda.dao.TempImageDao;
 import com.igoda.dao.entity.MattingImage;
 import com.igoda.dao.entity.TempImage;
 import com.igoda.dao.utils.DaoUtils;
-import com.zgreenmatting.download.status.DownloadStatus;
-import com.zgreenmatting.download.utils.FileUtils;
+import com.zgreenmatting.entity.DownloadStatus;
 import com.zgreenmatting.entity.ProgressInfo;
+import com.zgreenmatting.utils.FileUtils;
 
-import java.io.File;
 import java.util.List;
 
 
@@ -73,12 +72,13 @@ public class MattingImageService {
         dao.update(mattingImage);
     }
 
+    //获取下载进度信息
     public ProgressInfo getProgressInfo() {
         ProgressInfo info = new ProgressInfo();
         MattingImageDao dao = DaoUtils.getDaoSession().getMattingImageDao();
         info.setTotal(dao.queryBuilder().count());
         info.setFinished(dao.queryBuilder().where(
-                MattingImageDao.Properties.DownloadState.eq(DownloadStatus.DONE)
+                MattingImageDao.Properties.DownloadState.eq(DownloadStatus.DONE.getValue())
         ).count());
         return info;
     }

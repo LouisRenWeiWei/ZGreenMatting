@@ -1,11 +1,6 @@
-package com.zgreenmatting.download.status;
+package com.zgreenmatting.entity;
 
-/**
- * DownloadStatus
- * 下载状态
- * @author JF Zhang
- * @date 2015/8/21
- */
+
 public enum DownloadStatus {
 
     NONE(0),

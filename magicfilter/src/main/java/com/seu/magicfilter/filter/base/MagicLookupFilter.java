@@ -45,10 +45,7 @@ public class MagicLookupFilter extends GPUImageFilter {
 
     protected String table;
 
-    public MagicLookupFilter(String table) {
-        super(NO_FILTER_VERTEX_SHADER,LOOKUP_FRAGMENT_SHADER);
-        this.table = table;
-    }
+
     
     public int mLookupTextureUniform;
     public int mLookupSourceTexture = OpenGlUtils.NO_TEXTURE;

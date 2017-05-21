@@ -1,4 +1,4 @@
-package com.zgreenmatting.download.utils;
+package com.zgreenmatting.utils;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -28,10 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * FileUtils
- *
- */
 public class FileUtils {
     static final String LOG_TAG = "FileUtils";
 

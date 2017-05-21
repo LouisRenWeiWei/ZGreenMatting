@@ -7,8 +7,13 @@
         android:id="@+id/tv_message"
         android:layout_width="match_parent"
         android:layout_height="45dp"
+        android:paddingRight="20dp"
+        android:paddingLeft="20dp"
         android:gravity="center"
         android:text="TextView"
+        android:textSize="14sp"
+        android:textColor="@color/white"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"/>
+        android:layout_marginBottom="20dp"
+        android:background="@color/app_color"/>
 </LinearLayout>

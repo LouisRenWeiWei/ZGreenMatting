@@ -24,8 +24,8 @@ public class MagicEngine {
 
     }
 
-    public void setFilter(){
-        MagicParams.magicBaseView.setFilter();
+    public void setFilter(boolean needFilter){
+        MagicParams.magicBaseView.setFilter(needFilter);
     }
 
     public void savePicture(File file, SavePictureTask.OnPictureSaveListener listener){
@@ -36,6 +36,7 @@ public class MagicEngine {
     public void setFilterListener(MagicBaseView.OnFilterChangedListener onFilterChangedListener){
         MagicParams.magicBaseView.setOnFilterChangedListener(onFilterChangedListener);
     }
+
 
     public void switchCamera(){
         CameraEngine.switchCamera();

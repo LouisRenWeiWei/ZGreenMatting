@@ -7,9 +7,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Environment;
@@ -24,7 +22,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
@@ -35,6 +32,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.igoda.dao.entity.MattingImage;
 import com.igoda.dao.entity.TempImage;
+import com.liulishuo.filedownloader.BaseDownloadTask;
+import com.liulishuo.filedownloader.FileDownloadListener;
+import com.liulishuo.filedownloader.FileDownloader;
 import com.rey.material.widget.Slider;
 import com.seu.magicfilter.MagicEngine;
 import com.seu.magicfilter.filter.advanced.MagicAAFilter;
@@ -44,18 +44,19 @@ import com.seu.magicfilter.widget.MagicCameraView;
 import com.seu.magicfilter.widget.base.MagicBaseView;
 import com.zgreenmatting.BaseActivity;
 import com.zgreenmatting.R;
+import com.zgreenmatting.adapter.LinerVerticalHorizonSpace;
 import com.zgreenmatting.adapter.FilterAdapter;
 import com.zgreenmatting.blservice.MattingImageService;
-import com.zgreenmatting.download.DownloadManager;
-import com.zgreenmatting.download.IDownloadStateListener;
-import com.zgreenmatting.download.status.DownloadStatus;
+import com.zgreenmatting.entity.DownloadStatus;
 import com.zgreenmatting.entity.ProgressInfo;
 import com.zgreenmatting.utils.AppData;
 import com.zgreenmatting.utils.GetBigFileMD5;
 import com.zgreenmatting.utils.JSONUtil;
 import com.zgreenmatting.utils.NetworkUtils;
+import com.zgreenmatting.utils.NumberUtils;
 import com.zgreenmatting.utils.PhoneUtil;
 import com.zgreenmatting.utils.RequestUtil;
+import com.zgreenmatting.utils.SDUtils;
 import com.zgreenmatting.utils.ToastUtils;
 
 import org.json.JSONArray;
@@ -73,7 +74,8 @@ import java.util.Map;
 
 import butterknife.BindView;
 
-public class CameraActivity extends BaseActivity implements View.OnClickListener, FilterAdapter.onFilterChangeListener {
+public class CameraActivity extends BaseActivity implements View.OnClickListener, FilterAdapter.ItemOperation,
+        MagicBaseView.OnFilterChangedListener,MagicCameraView.OnCameraInitedListener {
     //相机
     @BindView(R.id.cameraView)
     MagicCameraView cameraView;
@@ -103,6 +105,8 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
     private List<MattingImage> data;
 
     //下载view
+    @BindView(R.id.ll_download_info)
+    LinearLayout ll_download_info;
     @BindView(R.id.tv_download_speed)
     TextView tv_download_speed;//下载速度
     @BindView(R.id.progress)
@@ -119,8 +123,12 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
     private Map<Integer, Integer> soundMap;
 
     //下载
-    IDownloadStateListener iDownloadStateListener;
-    DownloadManager downloadManager;
+//    IDownloadStateListener iDownloadStateListener;
+//    DownloadManager downloadManager;
+    FileDownloadListener fileDownloadListener;
+
+
+    MattingImage orginalImage;
 
     @Override
     protected int getContentLayout() {
@@ -135,14 +143,21 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
         //初始化相机
         MagicEngine.Builder builder = new MagicEngine.Builder();
         magicEngine = builder.build(cameraView);
+        magicEngine.setFilterListener(this);
+        cameraView.setOnCameraInitedListener(this);
+
 
         //初始化背景列表
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         mFilterListView.setLayoutManager(linearLayoutManager);
         data = new ArrayList<>();
+        orginalImage = new MattingImage();
+
+        initDownload();
         mAdapter = new FilterAdapter(this, data);
-        mAdapter.setOnFilterChangeListener(this);
+        mAdapter.setItemOperation(this);
+        mFilterListView.addItemDecoration(new LinerVerticalHorizonSpace(0,PhoneUtil.dip2px(mContext,5)));
         mFilterListView.setAdapter(mAdapter);
 
         animator = ObjectAnimator.ofFloat(btn_camera_shutter, "rotation", 0, 360);
@@ -165,91 +180,58 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
                 }
             }
         });
-        initDownload();
+
     }
 
     //初始化下载
     private void initDownload() {
-        try {
-            /**
-             * 下载状态回调
-             */
-            iDownloadStateListener = new IDownloadStateListener() {
-                private long preDownloadSize = 0;
-                @Override
-                public void onPrepare(final Object entity, final long size) {
-                    preDownloadSize = 0;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-//                            updateView(entity, DownloadStatus.WAIT);
-                            //准备下载
-                        }
-                    });
-                }
 
-                @Override
-                public void onProcess(final Object entity, final long size) {
+        fileDownloadListener = new FileDownloadListener() {
+            private int preBytes = 0;
+            @Override
+            protected void pending(BaseDownloadTask task, int soFarBytes, int totalBytes) {
+                preBytes = 0;
+                updateView((MattingImage)task.getTag(),DownloadStatus.PAUSEING);
+            }
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            //这个地方有点问题
-                            tv_download_speed.setText((size-preDownloadSize)+"kbps");
-                            preDownloadSize = size;
-                        }
-                    });
-                }
+            @Override
+            protected void progress(BaseDownloadTask task, int soFarBytes, int totalBytes) {
+                //soFarBytes ： 当前文件已经下载的大小， totalBytes：当前文件的大小
+                updateView((MattingImage)task.getTag(), DownloadStatus.DLING);
+                tv_download_speed.setText(NumberUtils.format((soFarBytes-preBytes)*8/(1024f))+"kbps");
+                preBytes = soFarBytes;
+            }
 
-                @Override
-                public void onFinish(final Object entity, final String savePath) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            MattingImage data = (MattingImage) entity;
-                            data.setSdPath(savePath);
-                            updateView(entity, DownloadStatus.DONE);
-                        }
-                    });
+            @Override
+            protected void completed(BaseDownloadTask task) {
+                MattingImage tmp = (MattingImage)task.getTag();
+                tmp.setSdPath(task.getPath());
+                updateView(tmp,DownloadStatus.DONE);
+                int index = 0;
+                for(MattingImage item: data){
+                    if(tmp.getUrl().equalsIgnoreCase(item.getUrl())){
+                        break;
+                    }
+                    index ++;
                 }
+                mAdapter.notifyItemChanged(index);
+            }
 
-                @Override
-                public void onFailed(final Object entity, final String msg) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-//                            updateView(entity, DownloadStatus.ERROR);
-                        }
-                    });
-                }
+            @Override
+            protected void paused(BaseDownloadTask task, int soFarBytes, int totalBytes) {
+                updateView((MattingImage)task.getTag(),DownloadStatus.PAUSE);
+            }
 
-                @Override
-                public void onPause(final Object entity, final long size) {
-                    Log.i("tag", "onProcess " + entity.toString() + ",size=" + size);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            updateView(entity, DownloadStatus.PAUSE);
-                        }
-                    });
-                }
+            @Override
+            protected void error(BaseDownloadTask task, Throwable e) {
+                updateView((MattingImage)task.getTag(),DownloadStatus.ERROR);
+            }
 
-                @Override
-                public void onCancel(final Object entity) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            updateView(entity, DownloadStatus.NONE);
-                        }
-                    });
-                }
-            };
-            downloadManager = DownloadManager.INSTANCE.init(CameraActivity.this);
-            downloadManager.registerStateListener(iDownloadStateListener);
-            downloadManager.onStart();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            @Override
+            protected void warn(BaseDownloadTask task) {
+                //updateView((MattingImage)task.getTag(),DownloadStatus.ERROR);
+            }
+        };
     }
 
     /**
@@ -258,6 +240,7 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
     @Override
     protected void preInitData() {
         getBackdrops();
+        updateProgressView();
     }
 
     /**
@@ -266,31 +249,36 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
      * @param entity
      * @param status
      */
-    protected void updateView(Object entity, DownloadStatus status) {
-        MattingImage dataItem = (MattingImage) entity;
-        dataItem.setDownloadState(status.getValue());
-        MattingImageService.getInstance().update(dataItem);
+    protected void updateView(MattingImage entity, DownloadStatus status) {
+        entity.setDownloadState(status.getValue());
+        MattingImageService.getInstance().update(entity);
+        updateProgressView();
+    }
+
+    private void updateProgressView(){
         //更新下载进度
         ProgressInfo progressInfo = MattingImageService.getInstance().getProgressInfo();
         if(progressInfo!=null){
             if(progressInfo.getTotal()!=0){
                 progress.setMax((int)progressInfo.getTotal());
-                progress.setProgress((int)(progressInfo.getFinished()/progressInfo.getTotal()));
+                progress.setProgress((int)progressInfo.getFinished());
             }else {
                 progress.setProgress(0);
                 progress.setMax(0);
             }
             tv_progress_txt.setText(progressInfo.getFinished()+"/"+progressInfo.getTotal());
+            if(progressInfo.getTotal()==progressInfo.getFinished()){
+                tv_download_speed.setText("0kbps");
+                ll_download_info.setVisibility(View.GONE);
+            }else {
+                ll_download_info.setVisibility(View.VISIBLE);
+            }
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (downloadManager != null) {
-            downloadManager.unRegisterStateListener(iDownloadStateListener);
-            downloadManager.onDestroy();
-        }
     }
 
     //click
@@ -303,14 +291,16 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
             case R.id.btn_camera_shutter:
                 //这个地方检查一下，本地如果超过15个未上传图片，提示用户打开网络进行上传操作
                 int unuploadCount = MattingImageService.getInstance().getLocalUnuploadCount();
-                if (unuploadCount > 15) {
-                    ToastUtils.showCustomerToast(mContext, "请打开网络，上传本地已拍照照片");
+                if (unuploadCount >= 15) {
+                    //如果本地有离线数据就立马上传一次
+                    if (NetworkUtils.isNetworkAvailable(mContext)) {
+                        uploadPicInfo();
+                    }else {
+                        ToastUtils.showCustomerToast(mContext, "请打开网络，上传本地已拍照照片");
+                    }
                     return;
                 }
-                //如果本地有离线数据就立马上传一次
-                if (NetworkUtils.isNetworkAvailable(mContext) && unuploadCount > 0) {
-                    uploadPicInfo();
-                }
+
                 if (PermissionChecker.checkSelfPermission(CameraActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         == PackageManager.PERMISSION_DENIED) {
                     ActivityCompat.requestPermissions(CameraActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
@@ -444,28 +434,48 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
         });
         animator.start();
     }
+
+    private int currentItem = 0;
     //receycleview 的item点击
     @Override
-    public void onChangePostion(final int position) {
-        magicEngine.setFilter();
-        MagicAAFilter filter = (MagicAAFilter) cameraView.getFilter();
-        if (filter != null) {
-            magicEngine.setFilterListener(new MagicBaseView.OnFilterChangedListener() {
-                @Override
-                public void filterChange(GPUImageFilter filter) {
-                    if (filter instanceof MagicAAFilter) {
-                        try {
-                            MagicAAFilter aafilter = (MagicAAFilter) filter;
-                            aafilter.setBitmap(BitmapFactory.decodeStream(new FileInputStream(new File(data.get(position).getSdPath()))));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
+    public void onItemClick(final int position) {
+        currentItem = position;
+        if(position!=0){
+            MattingImage item = data.get(position);
+            if(TextUtils.isEmpty(item.getSdPath())||item.getDownloadState()!=DownloadStatus.DONE.getValue()){
+                ToastUtils.showCustomerToast(mContext,"请等待下载");
+                return;
+            }
+            magicEngine.setFilter(true);
+        }else{
+            magicEngine.setFilter(false);
         }
+        //原图不处理
         hideFilters();
     }
+
+    @Override
+    public void filterChange(GPUImageFilter filter) {
+        if(filter!=null){
+            if (filter instanceof MagicAAFilter) {
+                try {
+                    MagicAAFilter aafilter = (MagicAAFilter) filter;
+                    if(currentItem!=0){//0 是把filter清空了
+                        MattingImage item = data.get(currentItem);
+                        aafilter.setBitmap(BitmapFactory.decodeStream(new FileInputStream(item.getSdPath())));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onCameraInited() {
+        //magicEngine.setFilter();
+    }
+
 
     //////////////////
     //获取背景数据
@@ -519,52 +529,67 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
             @Override
             public void run() {
                 data.clear();
+                data.add(orginalImage);
                 data.addAll(MattingImageService.getInstance().getList());
                 mAdapter.notifyDataSetChanged();
+                updateProgressView();
+                for(int i=1;i<data.size();i++){
+                    MattingImage item = data.get(i);
+                    if (item.getDownloadState() != DownloadStatus.DONE.getValue()) {
+                        String sdPath = SDUtils.getImagePath()+item.getName();
+                        FileDownloader.getImpl().create(item.getUrl()).setPath(sdPath)
+                                .setTag(item)
+                                .setListener(fileDownloadListener)
+                                .ready();
+                    }
+                }
+                FileDownloader.getImpl().start(fileDownloadListener, true);// 串行执行该队列
             }
         });
     }
 
     //上传本地离线数据
     private void uploadPicInfo() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final TempImage tempImage = MattingImageService.getInstance().getNextTmpImage();
-                if (NetworkUtils.isNetworkAvailable(mContext) && tempImage != null) {
-                    StringRequest request = new StringRequest(Request.Method.POST, RequestUtil.sendImageInfo, new Listener<String>() {
-                        @Override
-                        public void onSuccess(String response) {
-                            try {
-                                JSONObject obj = new JSONObject(response);
-                                if (obj.getInt("errCode") == 1) {
-                                    //上传完毕删除本地离线数据
-                                    MattingImageService.getInstance().deleteTmpImage(tempImage);
-                                } else {
-                                    ToastUtils.showSystemToast(mContext, obj.getString("desc"));
+        if (NetworkUtils.isNetworkAvailable(mContext)){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    final TempImage tempImage = MattingImageService.getInstance().getNextTmpImage();
+                    if (NetworkUtils.isNetworkAvailable(mContext) && tempImage != null) {
+                        StringRequest request = new StringRequest(Request.Method.POST, RequestUtil.sendImageInfo, new Listener<String>() {
+                            @Override
+                            public void onSuccess(String response) {
+                                try {
+                                    JSONObject obj = new JSONObject(response);
+                                    if (obj.getInt("errCode") == 1) {
+                                        //上传完毕删除本地离线数据
+                                        MattingImageService.getInstance().deleteTmpImage(tempImage);
+                                    } else {
+                                        ToastUtils.showSystemToast(mContext, obj.getString("desc"));
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
-                            } catch (Exception e) {
-                                e.printStackTrace();
                             }
-                        }
 
-                        @Override
-                        public void onError(VolleyError error) {
-                        }
-                    }) {
-                        @Override
-                        protected Map<String, String> getParams() throws AuthFailureError {
-                            Map<String, String> map = new HashMap<String, String>();
-                            map.put("account", AppData.getString(mContext, AppData.ACCOUNT));
-                            map.put("value", tempImage.getValue());
-                            map.put("device_id", PhoneUtil.getDevicesID(mContext));
-                            return map;
-                        }
-                    };
-                    Volley.getRequestQueue().add(request);
+                            @Override
+                            public void onError(VolleyError error) {
+                            }
+                        }) {
+                            @Override
+                            protected Map<String, String> getParams() throws AuthFailureError {
+                                Map<String, String> map = new HashMap<String, String>();
+                                map.put("account", AppData.getString(mContext, AppData.ACCOUNT));
+                                map.put("value", tempImage.getValue());
+                                map.put("device_id", PhoneUtil.getDevicesID(mContext));
+                                return map;
+                            }
+                        };
+                        Volley.getRequestQueue().add(request);
+                    }
                 }
-            }
-        }).start();
+            }).start();
+        }
     }
 
     //先把数据保存到本地,然后再上传
@@ -576,4 +601,7 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
             uploadPicInfo();
         }
     }
+
+
+
 }

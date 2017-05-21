@@ -12,28 +12,31 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.igoda.dao.entity.MattingImage;
 import com.zgreenmatting.R;
-import com.zgreenmatting.download.DownloadManager;
-import com.zgreenmatting.download.status.DownloadStatus;
+import com.zgreenmatting.blservice.MattingImageService;
+import com.zgreenmatting.entity.DownloadStatus;
 
+import java.io.File;
 import java.util.List;
 
-/**
- * Created by why8222 on 2016/3/17.
- */
+
 public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterHolder> {
 
     private List<MattingImage> data;
     private Context context;
     private int selected = 0;
 
-    //
-    DownloadManager downloadManager;
 
+    public void setSelected(int position){
+        if(this.selected!=position){
+            int preSelect = this.selected;
+            this.selected = position;
+            notifyItemChanged(preSelect);
+        }
+    }
 
     public FilterAdapter(Context context, List<MattingImage> data) {
         this.data = data;
         this.context = context;
-        downloadManager = DownloadManager.INSTANCE;
     }
 
     @Override
@@ -53,10 +56,26 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterHold
     @Override
     public void onBindViewHolder(FilterHolder holder, final int position) {
         MattingImage item = data.get(position);
-        if(!TextUtils.isEmpty(item.getSdPath())){
-            Glide.with(context).load(item.getSdPath()).into(holder.iv_thumb);
-        }else{
-            //未下载
+        if(position!=0){
+            if(!TextUtils.isEmpty(item.getSdPath())){
+                //检查本地是否有文件
+                File file = new File(item.getSdPath());
+                if(file.exists()){
+                    Glide.with(context).load(item.getSdPath()).into(holder.iv_thumb);
+                }else{
+                    item.setSdPath("");
+                    item.setDownloadState(DownloadStatus.NONE.getValue());
+                    MattingImageService.getInstance().update(item);
+                }
+            }else{
+                //未下载
+                item.setDownloadState(DownloadStatus.NONE.getValue());
+                MattingImageService.getInstance().update(item);
+                //未下载显示原图
+                Glide.with(context).load(R.mipmap.filter_thumb_original).into(holder.iv_thumb);
+            }
+        }else {
+            Glide.with(context).load(R.mipmap.filter_thumb_original).into(holder.iv_thumb);
         }
 
         if (position == selected) {
@@ -73,30 +92,10 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterHold
                     notifyItemChanged(selected);
                     notifyItemChanged(position);
                     selected = position;
-                    onFilterChangeListener.onChangePostion(position);
+                    if(itemOperation!=null)itemOperation.onItemClick(position);
                 }
             }
         });
-
-        //添加到下载任务
-        if (item.getDownloadState() == DownloadStatus.NONE.getValue()) {
-            downloadManager.onOffer(item);
-        } else if (item.getDownloadState() == DownloadStatus.DLING.getValue()) {
-            //下载中
-            downloadManager.onPause(item);
-        } else if (item.getDownloadState() == DownloadStatus.WAIT.getValue()) {
-            //等待
-
-        }else if (item.getDownloadState() == DownloadStatus.DONE.getValue()) {
-            //完成
-
-        }else if (item.getDownloadState() == DownloadStatus.PAUSE.getValue()) {
-            //暂停
-            downloadManager.onContinue(item);
-        } else if (item.getDownloadState() == DownloadStatus.ERROR.getValue()) {
-            //失败
-            downloadManager.onContinue(item);
-        }
     }
 
     @Override
@@ -114,13 +113,17 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterHold
         }
     }
 
-    public interface onFilterChangeListener {
-        void onChangePostion(int position);
+    public interface ItemOperation {
+        void onItemClick(int position);
     }
 
-    private onFilterChangeListener onFilterChangeListener;
+    private ItemOperation itemOperation;
 
-    public void setOnFilterChangeListener(onFilterChangeListener onFilterChangeListener) {
-        this.onFilterChangeListener = onFilterChangeListener;
+    public ItemOperation getItemOperation() {
+        return itemOperation;
+    }
+
+    public void setItemOperation(ItemOperation itemOperation) {
+        this.itemOperation = itemOperation;
     }
 }
