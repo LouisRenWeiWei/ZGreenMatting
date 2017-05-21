@@ -53,3 +53,39 @@
   public *;
 }
 
+
+#volley  android
+-dontwarn com.android.**
+-keep class com.android.** { *; }
+
+#
+-dontwarn com.igoda.dao.**
+-keep class com.igoda.dao.** { *; }
+
+#
+-dontwarn com.zgreenmatting.utils.**
+-keep class com.zgreenmatting.utils.** { *; }
+
+#
+-dontwarn com.zgreenmatting.entity.**
+-keep class com.zgreenmatting.entity.** { *; }
+
+-dontwarn org.greenrobot.**
+-keep class org.greenrobot.** { *; }
+
+
+-dontwarn org.apache.**
+-keep class org.apache.** { *; }
+
+
+-dontwarn com.github.**
+-keep class com.github.** { *; }
+
+
+-dontwarn com.jakewharton.**
+-keep class com.jakewharton.** { *; }
+
+
+-dontwarn com.liulishuo.**
+-keep class com.liulishuo.** { *; }
+
