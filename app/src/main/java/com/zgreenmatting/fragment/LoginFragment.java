@@ -73,10 +73,12 @@ public class LoginFragment extends BaseFragment {
             ToastUtils.showCustomerToast(mContext,"请检查网络连接");
             return;
         }
+        tv_login.setEnabled(false);
         StringRequest request = new StringRequest(Request.Method.POST, RequestUtil.login, new Listener<String>() {
             @Override
             public void onSuccess(String response) {
                 try {
+                    tv_login.setEnabled(true);
                     JSONObject obj = new JSONObject(response);
                     if (obj.getInt("errCode") ==1) {
                         AppData.saveString(mContext, AppData.ACCOUNT, account.toUpperCase());
@@ -94,6 +96,7 @@ public class LoginFragment extends BaseFragment {
             @Override
             public void onError(VolleyError error) {
                 Log.d("error","");
+                tv_login.setEnabled(true);
             }
         }){
             @Override

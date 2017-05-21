@@ -198,7 +198,7 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
             protected void progress(BaseDownloadTask task, int soFarBytes, int totalBytes) {
                 //soFarBytes ： 当前文件已经下载的大小， totalBytes：当前文件的大小
                 updateView((MattingImage)task.getTag(), DownloadStatus.DLING);
-                tv_download_speed.setText(NumberUtils.format((soFarBytes-preBytes)*8/(1024f))+"kbps");
+                tv_download_speed.setText(NumberUtils.format((soFarBytes-preBytes)/(1024f))+"KB");
                 preBytes = soFarBytes;
             }
 
@@ -268,10 +268,10 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
             }
             tv_progress_txt.setText(progressInfo.getFinished()+"/"+progressInfo.getTotal());
             if(progressInfo.getTotal()==progressInfo.getFinished()){
-                tv_download_speed.setText("0kbps");
-                ll_download_info.setVisibility(View.GONE);
+                tv_download_speed.setText("0KB");
+                //ll_download_info.setVisibility(View.GONE);
             }else {
-                ll_download_info.setVisibility(View.VISIBLE);
+                //ll_download_info.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -296,7 +296,7 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
                     if (NetworkUtils.isNetworkAvailable(mContext)) {
                         uploadPicInfo();
                     }else {
-                        ToastUtils.showCustomerToast(mContext, "请打开网络，上传本地已拍照照片");
+                        ToastUtils.showCustomerToast(mContext, "您无法拍照，请让手机连上网络");
                     }
                     return;
                 }
@@ -446,7 +446,21 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
                 ToastUtils.showCustomerToast(mContext,"请等待下载");
                 return;
             }
-            magicEngine.setFilter(true);
+            //检查本地文件是否存在
+            File tmp = new File(item.getSdPath());
+            if(tmp.exists()){
+                magicEngine.setFilter(true);
+            }else {
+                //item.setSdPath("");
+                item.setDownloadState(DownloadStatus.NONE.getValue());
+                MattingImageService.getInstance().update(item);
+                updateProgressView();
+                FileDownloader.getImpl().create(item.getUrl()).setPath(item.getSdPath())
+                        .setTag(item)
+                        .setListener(fileDownloadListener)
+                        .ready();
+                FileDownloader.getImpl().start(fileDownloadListener, true);
+            }
         }else{
             magicEngine.setFilter(false);
         }
@@ -533,19 +547,23 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
                 data.addAll(MattingImageService.getInstance().getList());
                 mAdapter.notifyDataSetChanged();
                 updateProgressView();
-                for(int i=1;i<data.size();i++){
-                    MattingImage item = data.get(i);
-                    if (item.getDownloadState() != DownloadStatus.DONE.getValue()) {
-                        String sdPath = SDUtils.getImagePath()+item.getName();
-                        FileDownloader.getImpl().create(item.getUrl()).setPath(sdPath)
-                                .setTag(item)
-                                .setListener(fileDownloadListener)
-                                .ready();
-                    }
-                }
-                FileDownloader.getImpl().start(fileDownloadListener, true);// 串行执行该队列
+                monitorUndownload();
             }
         });
+    }
+
+    private void monitorUndownload(){
+        for(int i=1;i<data.size();i++){
+            MattingImage item = data.get(i);
+            if (item.getDownloadState() != DownloadStatus.DONE.getValue()) {
+                String sdPath = SDUtils.getImagePath()+item.getName();
+                FileDownloader.getImpl().create(item.getUrl()).setPath(sdPath)
+                        .setTag(item)
+                        .setListener(fileDownloadListener)
+                        .ready();
+            }
+        }
+        FileDownloader.getImpl().start(fileDownloadListener, true);// 串行执行该队列
     }
 
     //上传本地离线数据
@@ -574,6 +592,11 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
 
                             @Override
                             public void onError(VolleyError error) {
+                                if(NetworkUtils.isNetworkAvailable(mContext)){
+                                    ToastUtils.showCustomerToast(mContext, "网络有问题，请检查网络");
+                                }else {
+                                    ToastUtils.showCustomerToast(mContext, "请让手机连上网络");
+                                }
                             }
                         }) {
                             @Override

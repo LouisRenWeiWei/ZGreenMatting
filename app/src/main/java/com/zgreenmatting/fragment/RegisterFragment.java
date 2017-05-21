@@ -84,10 +84,12 @@ public class RegisterFragment extends BaseFragment {
             ToastUtils.showCustomerToast(mContext, "请检查网络连接");
             return;
         }
+        tv_register.setEnabled(false);
         StringRequest request = new StringRequest(Request.Method.POST, RequestUtil.registe, new Listener<String>() {
             @Override
             public void onSuccess(String response) {
                 try {
+                    tv_register.setEnabled(true);
                     //{"errCode":1,"desc":"注册成功，请您登录拍照吧！"}
                     JSONObject obj = new JSONObject(response);
                     if (obj.getInt("errCode") == 1) {
@@ -108,7 +110,7 @@ public class RegisterFragment extends BaseFragment {
 
             @Override
             public void onError(VolleyError error) {
-
+                tv_register.setEnabled(true);
             }
         }) {
             @Override
