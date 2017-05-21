@@ -1,6 +1,9 @@
 package com.zgreenmatting.update.utils;
 
+import android.text.TextUtils;
+
 import com.zgreenmatting.update.pojo.UpdateInfo;
+import com.zgreenmatting.utils.JSONUtil;
 
 import org.json.JSONObject;
 
@@ -21,15 +24,12 @@ public class JSONHandler {
         String byteData = new String(readStream(is));
         is.close();
         JSONObject jsonObject = new JSONObject(byteData);
-        UpdateInfo updateInfo = new UpdateInfo();
-        updateInfo.setApkUrl(jsonObject.getString("apkUrl"));
-        updateInfo.setAppName(jsonObject.getString("appName"));
-        updateInfo.setVersionCode(jsonObject.getString("versionCode"));
-        updateInfo.setVersionName(jsonObject.getString("versionName"));
-        updateInfo.setChangeLog(jsonObject.getString("changeLog"));
-        updateInfo.setUpdateTips(jsonObject.getString("updateTips"));
-        updateInfo.setForceUpgrade(jsonObject.getBoolean("forceUpgrade"));
-        return updateInfo;
+        UpdateInfo updateInfo = JSONUtil.toBean(jsonObject,UpdateInfo.class);
+        if(TextUtils.isEmpty(updateInfo.getVersionCode())){
+            return null;
+        }else {
+            return updateInfo;
+        }
     }
 
     private static byte[] readStream(InputStream inputStream) throws IOException {

@@ -30,6 +30,7 @@ import com.zgreenmatting.update.utils.HttpRequest;
 import com.zgreenmatting.update.utils.JSONHandler;
 import com.zgreenmatting.update.utils.NetWorkUtils;
 import com.zgreenmatting.update.utils.URLUtils;
+import com.zgreenmatting.utils.ToastUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -188,6 +189,7 @@ public class UpdateHelper {
             if (type != 1) {
                 showNetDialog(updateInfo);
             } else {
+                ToastUtils.showCustomerToast(mContext,"发现新版本，正在下载更新");
                 AsyncDownLoad asyncDownLoad = new AsyncDownLoad();
                 asyncDownLoad.execute(updateInfo);
             }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ZGreenMatting</string>
+    <string name="app_name">智能拍照</string>
 
     <!--app升级-->
     <string name="start_download">开始下载</string>
