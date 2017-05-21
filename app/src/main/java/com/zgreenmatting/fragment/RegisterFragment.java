@@ -13,7 +13,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.zgreenmatting.R;
 import com.zgreenmatting.activity.LoginActivity;
-import com.zgreenmatting.utils.AppData;
 import com.zgreenmatting.utils.NetworkUtils;
 import com.zgreenmatting.utils.PhoneUtil;
 import com.zgreenmatting.utils.RequestUtil;
@@ -78,6 +77,10 @@ public class RegisterFragment extends BaseFragment {
         }
         if (!passwdConfirm.equals(passwd)) {
             ToastUtils.showCustomerToast(mContext, "密码输入不一致");
+            return;
+        }
+        if(passwd.length()<6){
+            ToastUtils.showCustomerToast(mContext,"密码长度过短");
             return;
         }
         if (!NetworkUtils.isNetworkAvailable(mContext)) {
