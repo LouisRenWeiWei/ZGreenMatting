@@ -20,7 +20,8 @@ public class BaseApplication extends Application {
         super.onCreate();
         mContext = this;
         Volley.init(mContext,false);//初始化volley
-        DaoUtils.init(mContext, SDUtils.getDBPath());
+        DaoUtils.init(mContext);
+        //DaoUtils.init(mContext, SDUtils.getDBPath());
         FileDownloader.init(this);
     }
 

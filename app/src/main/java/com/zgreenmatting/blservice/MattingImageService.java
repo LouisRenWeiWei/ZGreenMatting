@@ -11,6 +11,7 @@ import com.zgreenmatting.entity.DownloadStatus;
 import com.zgreenmatting.entity.ProgressInfo;
 import com.zgreenmatting.utils.FileUtils;
 
+import java.io.File;
 import java.util.List;
 
 
@@ -25,8 +26,20 @@ public class MattingImageService {
     }
 
     public List<MattingImage> getList() {
-        return DaoUtils.getDaoSession().getMattingImageDao().queryBuilder()
+        MattingImageDao dao = DaoUtils.getDaoSession().getMattingImageDao();
+        List<MattingImage> tmp = dao.queryBuilder()
                 .list();
+        for (MattingImage item : tmp){
+            if(!TextUtils.isEmpty(item.getSdPath())){
+                File file = new File(item.getSdPath());
+                if(!file.exists()){
+                    item.setSdPath("");
+                    item.setDownloadState(DownloadStatus.NONE.getValue());
+                    dao.update(item);
+                }
+            }
+        }
+        return tmp;
     }
     //新增数据
     public void save(MattingImage mattingImage){

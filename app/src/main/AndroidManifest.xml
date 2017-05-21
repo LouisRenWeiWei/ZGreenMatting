@@ -37,7 +37,8 @@
             android:name=".activity.CameraActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:launchMode="singleTask">
         </activity>
         <activity android:name=".activity.GalleryActivity">
         </activity>

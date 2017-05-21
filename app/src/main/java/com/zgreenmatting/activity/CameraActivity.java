@@ -451,11 +451,13 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
             if(tmp.exists()){
                 magicEngine.setFilter(true);
             }else {
-                //item.setSdPath("");
+                String sdPaht = item.getSdPath();
+                item.setSdPath("");
                 item.setDownloadState(DownloadStatus.NONE.getValue());
                 MattingImageService.getInstance().update(item);
+                mAdapter.notifyItemChanged(position);
                 updateProgressView();
-                FileDownloader.getImpl().create(item.getUrl()).setPath(item.getSdPath())
+                FileDownloader.getImpl().create(item.getUrl()).setPath(sdPaht)
                         .setTag(item)
                         .setListener(fileDownloadListener)
                         .ready();
