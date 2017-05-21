@@ -33,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@null"
-        android:hint="密码（4—10位）"
+        android:hint="密码（6—10位）"
         android:inputType="textPassword"
         android:maxLength="10"
         android:maxLines="1"
