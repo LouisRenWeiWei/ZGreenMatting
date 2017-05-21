@@ -15,7 +15,7 @@
         android:maxLength="20"
         android:hint="账号"
         android:maxLines="1"
-        android:inputType="number"
+        android:digits="@string/digits"
         android:layout_gravity="center_horizontal"
         android:textColorHint="#a3a3a3"
         android:textColor="@color/app_text_color"

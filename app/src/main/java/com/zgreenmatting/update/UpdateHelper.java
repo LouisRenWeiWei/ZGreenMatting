@@ -454,10 +454,9 @@ public class UpdateHelper {
 
     private void installApk(Uri data) {
         if (mContext != null) {
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setDataAndType(data, "application/vnd.android.package-archive");
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            mContext.startActivity(i);
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(data,"application/vnd.android.package-archive");
+            mContext.startActivity(intent);
             if (notificationManager != null) {
                 notificationManager.cancel(DOWNLOAD_NOTIFICATION_ID);
             }

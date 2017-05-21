@@ -19,7 +19,7 @@
         android:drawablePadding="15dp"
         android:ems="13"
         android:hint="账号"
-        android:inputType="number"
+        android:digits="@string/digits"
         android:maxLines="1"
         android:textColor="@color/app_text_color"
         android:textColorHint="#a3a3a3"
