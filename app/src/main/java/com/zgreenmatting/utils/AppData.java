@@ -10,6 +10,8 @@ import android.content.SharedPreferences;
 public class AppData {
     public static final String ACCOUNT = "ACCOUNT";
     public static final String PASSWORD = "PASSWORD";
+    public static final String DEVICE_ID = "DEVICE_ID";
+
     public static SharedPreferences getSP(Context context){
         return context.getSharedPreferences(context.getPackageName(),Context.MODE_PRIVATE);
     }
