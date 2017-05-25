@@ -23,6 +23,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.blankj.utilcode.util.AppUtils;
 import com.zgreenmatting.R;
 import com.zgreenmatting.update.listener.OnUpdateListener;
 import com.zgreenmatting.update.pojo.UpdateInfo;
@@ -82,7 +83,8 @@ public class UpdateHelper {
             switch (msg.what) {
                 case COMPLETE_DOWNLOAD_APK:
                     if (UpdateHelper.this.isAutoInstall) {
-                        installApk(Uri.parse("file://" + cache.get(APK_PATH)));
+                        installApk(Uri.parse("file://" + cache.get(APK_PATH)),cache.get(APK_PATH));
+                        Log.e("install0:",cache.get(APK_PATH)+"");
                     } else {
                         ntfBuilder.setContentTitle(cache.get(APP_NAME))
                                 .setContentText(mContext.getText(R.string.finished_install))
@@ -452,16 +454,27 @@ public class UpdateHelper {
         }
     }
 
-    private void installApk(Uri data) {
-        if (mContext != null) {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(data,"application/vnd.android.package-archive");
-            mContext.startActivity(intent);
-            if (notificationManager != null) {
-                notificationManager.cancel(DOWNLOAD_NOTIFICATION_ID);
+    private void installApk(Uri parse, String data) {
+        String type = "com.mydomain.fileprovider";
+        if(Build.VERSION.SDK_INT>=24) { //判断版本是否在7.0以上
+            AppUtils.installApp(data, type);
+        }else {
+            if (mContext != null) {
+                Intent intent = new Intent();
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setDataAndType(parse,"application/vnd.android.package-archive");
+                mContext.startActivity(intent);
+            } else {
+                Log.e("NullPointerException", "The context must not be null.");
             }
-        } else {
-            Log.e("NullPointerException", "The context must not be null.");
         }
+        if (notificationManager != null) {
+            notificationManager.cancel(DOWNLOAD_NOTIFICATION_ID);
+        }
+
     }
+
+
+
 }

@@ -61,6 +61,7 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     compile 'com.github.rey5137:material:1.2.4'
     compile 'com.liulishuo.filedownloader:library:1.4.3'
+    compile 'com.blankj:utilcode:1.5.1'
 
 
 }

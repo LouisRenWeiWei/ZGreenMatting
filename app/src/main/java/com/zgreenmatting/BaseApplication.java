@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.android.volley.toolbox.Volley;
+import com.blankj.utilcode.util.Utils;
 import com.igoda.dao.utils.DaoUtils;
 import com.liulishuo.filedownloader.FileDownloader;
 import com.zgreenmatting.utils.SDUtils;
@@ -23,6 +24,7 @@ public class BaseApplication extends Application {
         DaoUtils.init(mContext);
         //DaoUtils.init(mContext, SDUtils.getDBPath());
         FileDownloader.init(this);
+        Utils.init(mContext);
     }
 
 }
