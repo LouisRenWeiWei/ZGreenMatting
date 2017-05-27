@@ -16,6 +16,7 @@ public class GetBigFileMD5 {
     public static String getMD5(File file) {
         FileInputStream fileInputStream = null;
         try {
+            
             MessageDigest MD5 = MessageDigest.getInstance("MD5");
             fileInputStream = new FileInputStream(file);
             byte[] buffer = new byte[8192];
