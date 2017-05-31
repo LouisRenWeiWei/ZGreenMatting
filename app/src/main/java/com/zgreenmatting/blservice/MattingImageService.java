@@ -27,7 +27,7 @@ public class MattingImageService {
 
     public List<MattingImage> getList() {
         MattingImageDao dao = DaoUtils.getDaoSession().getMattingImageDao();
-        List<MattingImage> tmp = dao.queryBuilder()
+        List<MattingImage> tmp = dao.queryBuilder().orderDesc(MattingImageDao.Properties.CreateTime)
                 .list();
         for (MattingImage item : tmp){
             if(!TextUtils.isEmpty(item.getSdPath())){
