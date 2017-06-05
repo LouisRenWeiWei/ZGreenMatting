@@ -121,7 +121,7 @@ public class RegisterFragment extends BaseFragment {
                 Map<String, String> map = new HashMap<>();
                 map.put("account", account);
                 map.put("password", passwd);
-                map.put("device_id", PhoneUtil.getDevicesID(mContext));
+                map.put("device_id", PhoneUtil.getDevicesID());
                 map.put("model", PhoneUtil.getBrand());
                 return map;
             }

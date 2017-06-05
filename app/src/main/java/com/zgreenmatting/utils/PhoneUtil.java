@@ -3,14 +3,10 @@ package com.zgreenmatting.utils;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.net.wifi.WifiManager;
-import android.os.Build;
-import android.provider.Settings;
-import android.telephony.TelephonyManager;
-import android.text.TextUtils;
+
+import com.blankj.utilcode.util.DeviceUtils;
 
 import java.util.Locale;
-import java.util.UUID;
 
 public class PhoneUtil {
 
@@ -47,37 +43,12 @@ public class PhoneUtil {
     }
 
     /**
-     * 获取devicesID
+     * 获取设备ID devicesID
      *
-     * @param mContext
      * @return
      */
-    public static String getDevicesID(Context mContext) {
-        TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
-        String deviceId = tm.getDeviceId();//device id
-        if(TextUtils.isEmpty(deviceId)||deviceId.contains("0000")||deviceId.contains("****")){
-            deviceId = tm.getSimSerialNumber();//Sim Serial Number
-            if(TextUtils.isEmpty(deviceId)){
-                WifiManager wifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
-                //mac地址
-                deviceId = wifiManager.getConnectionInfo()!=null?wifiManager.getConnectionInfo().getMacAddress():"";
-                if(TextUtils.isEmpty(deviceId)){
-                    //2.3以上 Serial Number
-                    deviceId = Build.SERIAL;
-                    if(TextUtils.isEmpty(deviceId)){
-                        //当设备首次启动时，系统会随机生成一个64位的数字，并把这个数字以16进制字符串的形式保存下来
-                        deviceId = Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID);
-                        if(TextUtils.isEmpty(deviceId)){
-                            deviceId = AppData.getString(mContext,AppData.DEVICE_ID);
-                            if(TextUtils.isEmpty(deviceId)){
-                                deviceId = UUID.randomUUID().toString();
-                                AppData.saveString(mContext,AppData.DEVICE_ID,deviceId);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    public static String getDevicesID() {
+        String deviceId = DeviceUtils.getAndroidID();
         return deviceId;
     }
 

@@ -14,8 +14,8 @@ import com.android.volley.listener.Listener;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.zgreenmatting.R;
+import com.zgreenmatting.activity.CameraActivity;
 import com.zgreenmatting.activity.LoginActivity;
-import com.zgreenmatting.activity.MainActivity;
 import com.zgreenmatting.utils.AppData;
 import com.zgreenmatting.utils.NetworkUtils;
 import com.zgreenmatting.utils.PhoneUtil;
@@ -85,7 +85,7 @@ public class LoginFragment extends BaseFragment {
                     if (obj.getInt("errCode") ==1) {
                         AppData.saveString(mContext, AppData.ACCOUNT, account.toUpperCase());
                         AppData.saveString(mContext, AppData.PASSWORD, passwd);
-                        startActivity(new Intent(mContext, MainActivity.class));
+                        startActivity(new Intent(mContext, CameraActivity.class));
                         ((LoginActivity)getActivity()).finish();
                     }else {
                         ToastUtils.showSystemToast(mContext,obj.getString("desc"));
@@ -106,7 +106,7 @@ public class LoginFragment extends BaseFragment {
                 Map<String, String> map = new HashMap<>();
                 map.put("account", account.toUpperCase());
                 map.put("password", passwd);
-                map.put("device_id", PhoneUtil.getDevicesID(mContext));
+                map.put("device_id", PhoneUtil.getDevicesID());
                 map.put("model", PhoneUtil.getBrand());
                 map.put("version_name",PhoneUtil.getVersionName(mContext));
                 map.put("version_code",PhoneUtil.getVersionCode(mContext));

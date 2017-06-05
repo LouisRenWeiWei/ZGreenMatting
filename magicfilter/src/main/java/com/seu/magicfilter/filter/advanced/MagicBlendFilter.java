@@ -3,7 +3,7 @@ package com.seu.magicfilter.filter.advanced;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
 
-import com.seu.magicfilter.R;
+import com.momo.zgreenmattingshader.ZGreenMattingUtil;
 import com.seu.magicfilter.filter.base.gpuimage.GPUImageFilter;
 import com.seu.magicfilter.utils.MagicParams;
 import com.seu.magicfilter.utils.OpenGlUtils;
@@ -21,6 +21,9 @@ public class MagicBlendFilter extends GPUImageFilter {
     protected int mGLUniformExtraTexture;
     protected int extraTextureHandle;
     protected int mGLAttribExtraTextureCoordinate;
+
+    private float[] mPositionTransformMatrix;
+    private int mPositionTransformMatrixLocation;
 
     public static final String BLEND_FILTER_VERTEX_SHADER = "" +
             "attribute vec4 position;\n" +
@@ -40,8 +43,15 @@ public class MagicBlendFilter extends GPUImageFilter {
             "}";
 
     public MagicBlendFilter(){
-        super(BLEND_FILTER_VERTEX_SHADER ,
-                OpenGlUtils.readShaderFromRawResource(R.raw.fragment_shader_blend));
+//        super(BLEND_FILTER_VERTEX_SHADER ,
+//                OpenGlUtils.readShaderFromRawResource(R.raw.fragment_shader_blend));
+//        super(mBlendVertexShader,
+//                OpenGlUtils.readShaderFromRawResource(R.raw.fragment_shader_blend));
+//        super(ZGreenMattingUtil.getBlendVertexShader(),
+//                    OpenGlUtils.readShaderFromRawResource(R.raw.fragment_shader_blend));
+        super(ZGreenMattingUtil.getBlendVertexShader(),
+                ZGreenMattingUtil.getBlendFragmentShader());
+
     }
 
     protected void onInit() {
@@ -52,6 +62,7 @@ public class MagicBlendFilter extends GPUImageFilter {
                 "inputExtraTextureCoordinate");
 
         mGLTextureBuffer.put(TextureRotationUtil.getRotation(Rotation.NORMAL, false, false)).position(0);
+        mPositionTransformMatrixLocation = GLES20.glGetUniformLocation(mGLProgId, "uMVPMatrix");
     }
     public void setExtraTexture(final Bitmap bitmap){
 
@@ -119,10 +130,15 @@ public class MagicBlendFilter extends GPUImageFilter {
             GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + 1);
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, extraTextureHandle);
             GLES20.glUniform1i(mGLUniformExtraTexture, 1);
+            GLES20.glUniformMatrix4fv(mPositionTransformMatrixLocation, 1, false, mPositionTransformMatrix, 0);
         }
     }
 
     protected void onInitialized(){
         super.onInitialized();
+    }
+
+    public void setPositionTransformMatrix(float[] mtx) {
+        mPositionTransformMatrix = mtx;
     }
 }

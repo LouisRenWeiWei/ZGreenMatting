@@ -43,12 +43,12 @@ public class MainActivity extends BaseActivity {
     }
 
     private void startActivity() {
-        Log.e("main_devicesId:", PhoneUtil.getDevicesID(mContext));
+        Log.e("main_devicesId:", PhoneUtil.getDevicesID());
         Log.e("main_品牌型号:", PhoneUtil.getBrand());
         Log.e("main_系统版本:", PhoneUtil.getSystemVersion());
         Log.e("main_appName:", PhoneUtil.getVersionName(mContext));
         Log.e("main_appCode:", PhoneUtil.getVersionCode(mContext));
-        startActivity(new Intent(this, CameraActivity.class));
+        startActivity(new Intent(this, LoginActivity.class));
         finish();
     }
 }

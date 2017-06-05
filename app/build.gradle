@@ -7,13 +7,16 @@ android {
         applicationId "com.zgreenmatting"
         minSdkVersion 18
         targetSdkVersion 25
-        versionCode 102
-        versionName "1.0.2"
+        versionCode 109
+        versionName "1.0.9"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
                 cppFlags ""
             }
+        }
+        ndk {
+            abiFilters "armeabi-v7a"
         }
     }
 
@@ -62,6 +65,7 @@ dependencies {
     compile 'com.github.rey5137:material:1.2.4'
     compile 'com.liulishuo.filedownloader:library:1.4.3'
     compile 'com.blankj:utilcode:1.5.1'
+    compile 'com.h6ah4i.android.widget.verticalseekbar:verticalseekbar:0.7.2'
 
 
 }

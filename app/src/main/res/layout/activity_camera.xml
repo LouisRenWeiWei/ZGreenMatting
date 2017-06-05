@@ -1,35 +1,49 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/rl_bottom_tools"
-        android:layout_alignParentTop="true">
+        android:layout_height="match_parent">
 
-        <com.seu.magicfilter.widget.MagicCameraView
-            android:id="@+id/cameraView"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true">
+
+            <com.seu.magicfilter.widget.MagicCameraView
+                android:id="@+id/cameraView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <ImageView
+                android:id="@+id/btn_camera_mode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_margin="10dp"
+                android:src="@mipmap/icon_video"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/btn_camera_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_margin="10dp"
+                android:visibility="gone"
+                android:src="@drawable/selector_rewardcamera" />
+        </FrameLayout>
 
         <ImageView
-            android:id="@+id/btn_camera_mode"
+            android:id="@+id/setting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_margin="10dp"
-            android:src="@mipmap/icon_video"
-            android:visibility="gone" />
+            android:padding="5dp"
+            android:src="@mipmap/iv_settings"/>
 
-        <ImageView
-            android:id="@+id/btn_camera_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:layout_margin="10dp"
-            android:src="@drawable/selector_rewardcamera" />
-    </FrameLayout>
+    </RelativeLayout>
 
 
     <RelativeLayout
@@ -49,24 +63,29 @@
                 android:id="@+id/tv_tran"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="5dp"
                 android:gravity="center"
                 android:text="透明度"
                 android:textColor="@color/app_color"
                 android:textSize="14sp" />
 
-            <com.rey.material.widget.Slider xmlns:app="http://schemas.android.com/apk/res-auto"
+            <SeekBar
                 android:id="@+id/btn_camera_beauty"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:paddingLeft="10dp"
-                android:paddingRight="20dp"
-                app:sl_maxValue="10"
-                app:sl_minValue="0"
-                app:sl_primaryColor="@color/app_color"
-                app:sl_secondaryColor="@color/filter_color_brown"
-                app:sl_value="5" />
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:max="10"
+                android:progress="5"/>
+
+            <TextView
+                android:id="@+id/tran_text"
+                android:layout_width="30dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="0.5"
+                android:textColor="@color/app_color"
+                android:textSize="14sp"/>
+
         </LinearLayout>
 
         <LinearLayout
@@ -175,6 +194,164 @@
             android:layout_gravity="center_horizontal"
             android:scaleType="center"
             android:src="@mipmap/btn_close" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/up_down"
+        android:layout_width="20dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="200dp"
+        android:layout_marginTop="60dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="上"
+            android:textColor="@color/white"
+            android:textSize="12sp"/>
+
+        <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
+                android:id="@+id/updown_seek"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:max="10"
+                android:progress="5"
+                android:splitTrack="false"
+                app:seekBarRotation="CW270"/> <!-- Rotation: CW90 or CW270 -->
+        </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="下"
+            android:textColor="@color/white"
+            android:textSize="12sp"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/max_min"
+        android:layout_width="20dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="200dp"
+        android:layout_marginTop="60dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="大"
+            android:textColor="@color/white"
+            android:textSize="12sp"/>
+
+        <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBar
+                android:id="@+id/max_seek"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:max="10"
+                android:progress="10"
+                android:splitTrack="false"
+                app:seekBarRotation="CW270"/> <!-- Rotation: CW90 or CW270 -->
+        </com.h6ah4i.android.widget.verticalseekbar.VerticalSeekBarWrapper>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="小"
+            android:textColor="@color/white"
+            android:textSize="12sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/left_rigit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/rl_bottom_tools"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="左"
+                android:textColor="@color/white"
+                android:textSize="12sp"/>
+
+            <SeekBar
+                android:id="@+id/left_seek"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:max="10"
+                android:progress="5"/>
+
+            <TextView
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="右"
+                android:textColor="@color/white"
+                android:textSize="12sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="25dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="美颜"
+                android:textColor="@color/white"
+                android:textSize="12sp"/>
+
+            <SeekBar
+                android:id="@+id/beauty_seek"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:max="10"
+                android:progress="5"/>
+
+            <TextView
+                android:id="@+id/beauty_text"
+                android:layout_width="25dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="0.5"
+                android:textColor="@color/white"
+                android:textSize="12sp"/>
+        </LinearLayout>
+
     </LinearLayout>
 
 </RelativeLayout>

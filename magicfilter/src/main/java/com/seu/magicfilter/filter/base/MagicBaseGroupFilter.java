@@ -92,7 +92,7 @@ public class MagicBaseGroupFilter extends GPUImageFilter{
             if (isNotLast) {
             	GLES20.glViewport(0, 0, mIntputWidth, mIntputHeight);
                 GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBuffers[i]);
-                GLES20.glClearColor(0, 0, 0, 0);
+                GLES20.glClearColor(1.f, 1.f, 1.f, 0);
                 filter.onDrawFrame(previousTexture, mGLCubeBuffer, mGLTextureBuffer);
                 GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
                 previousTexture = frameBufferTextures[i];

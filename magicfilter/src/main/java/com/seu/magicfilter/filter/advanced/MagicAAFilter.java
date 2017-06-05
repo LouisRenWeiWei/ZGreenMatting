@@ -35,4 +35,10 @@ public class MagicAAFilter extends MagicBaseGroupFilter {
 		((MagicBlendFilter) filters.get(2)).setExtraTexture(name);
 	}
 
+	public void setPositionTransformMatrix(float[] mvp) {
+		((MagicMattingFilter) filters.get(0)).setPositionTransformMatrix(mvp);
+		((MagicBlurFilter) filters.get(1)).setPositionTransformMatrix(mvp);
+		((MagicBlendFilter) filters.get(2)).setPositionTransformMatrix(mvp);
+	}
+
 }

@@ -203,4 +203,16 @@ public abstract class MagicBaseView extends GLSurfaceView implements GLSurfaceVi
         CENTER_CROP,
         FIT_XY;
     }
+
+    public void setSize(float param) {
+        if (param >= 0.f && param <= 1.f) {
+            float vertex[] = {
+                    -param, -param,
+                    param, -param,
+                    -param, param,
+                    param, param,
+            };
+            gLCubeBuffer.put(vertex).position(0);
+        }
+    }
 }

@@ -1,1 +1,1 @@
-include ':app', ':magicfilter', ':network', ':dao'
+include ':app', ':magicfilter', ':network', ':dao', ':zgreenmattingshader'

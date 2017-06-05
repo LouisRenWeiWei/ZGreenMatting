@@ -18,10 +18,10 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
@@ -35,7 +35,6 @@ import com.igoda.dao.entity.TempImage;
 import com.liulishuo.filedownloader.BaseDownloadTask;
 import com.liulishuo.filedownloader.FileDownloadListener;
 import com.liulishuo.filedownloader.FileDownloader;
-import com.rey.material.widget.Slider;
 import com.seu.magicfilter.MagicEngine;
 import com.seu.magicfilter.filter.advanced.MagicAAFilter;
 import com.seu.magicfilter.filter.base.gpuimage.GPUImageFilter;
@@ -44,8 +43,8 @@ import com.seu.magicfilter.widget.MagicCameraView;
 import com.seu.magicfilter.widget.base.MagicBaseView;
 import com.zgreenmatting.BaseActivity;
 import com.zgreenmatting.R;
-import com.zgreenmatting.adapter.LinerVerticalHorizonSpace;
 import com.zgreenmatting.adapter.FilterAdapter;
+import com.zgreenmatting.adapter.LinerVerticalHorizonSpace;
 import com.zgreenmatting.blservice.MattingImageService;
 import com.zgreenmatting.entity.DownloadStatus;
 import com.zgreenmatting.entity.ProgressInfo;
@@ -75,7 +74,7 @@ import java.util.Map;
 import butterknife.BindView;
 
 public class CameraActivity extends BaseActivity implements View.OnClickListener, FilterAdapter.ItemOperation,
-        MagicBaseView.OnFilterChangedListener,MagicCameraView.OnCameraInitedListener {
+        MagicBaseView.OnFilterChangedListener,MagicCameraView.OnCameraInitedListener, SeekBar.OnSeekBarChangeListener {
     //相机
     @BindView(R.id.cameraView)
     MagicCameraView cameraView;
@@ -85,7 +84,7 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
     ImageView btn_camera_switch;//相机切换
 
     @BindView(R.id.btn_camera_beauty)
-    Slider btn_camera_beauty;//透明度
+    SeekBar btn_camera_beauty;//透明度
 
     @BindView(R.id.btn_album)
     TextView btn_album;//相册
@@ -97,6 +96,22 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
 
     @BindView(R.id.btn_camera_closefilter)
     ImageView btn_camera_closefilter;//关闭背景
+ 	@BindView(R.id.up_down)
+    LinearLayout up_down;
+    @BindView(R.id.max_min)
+    LinearLayout max_min;
+    @BindView(R.id.left_rigit)
+    LinearLayout left_rigit;
+    @BindView(R.id.updown_seek)
+    SeekBar updown_seek;
+    @BindView(R.id.max_seek)
+    SeekBar max_seek;
+    @BindView(R.id.left_seek)
+    SeekBar left_seek;
+    @BindView(R.id.beauty_seek)
+    SeekBar beauty_seek;
+    @BindView(R.id.setting)
+    ImageView setting;
     @BindView(R.id.ll_filterLayout)//
     LinearLayout ll_filterLayout;//背景布局
     @BindView(R.id.filter_listView)
@@ -113,6 +128,10 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
     ProgressBar progress;//下载进度条
     @BindView(R.id.tv_progress_txt)
     TextView tv_progress_txt;//下载进度
+    @BindView(R.id.tran_text)
+    TextView tran_text;
+    @BindView(R.id.beauty_text)
+    TextView beauty_text;
 
     private MagicEngine magicEngine;
     private final int MODE_PIC = 1;
@@ -121,6 +140,16 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
     private ObjectAnimator animator;
     private SoundPool soundPool;
     private Map<Integer, Integer> soundMap;
+	
+	 private static final int DISPLAY = 0;
+    private static final int HIDE = 1;
+    private static int STATE = HIDE;
+
+    private float mLastX = 0.5f;
+    private float mLastY = 0.5f;
+
+    private float mLastMoveX = 0.f;
+    private float mLastMoveY = 0.f;
 
     //下载
 //    IDownloadStateListener iDownloadStateListener;
@@ -163,6 +192,12 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
         animator = ObjectAnimator.ofFloat(btn_camera_shutter, "rotation", 0, 360);
         animator.setDuration(500);
         animator.setRepeatCount(ValueAnimator.INFINITE);
+// 		Point screenSize = new Point();
+//        getWindowManager().getDefaultDisplay().getSize(screenSize);
+//        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) cameraView.getLayoutParams();
+//        params.width = screenSize.x;
+//        params.height = screenSize.x * 4 / 3;
+//        cameraView.setLayoutParams(params);
 
         btn_camera_filter.setOnClickListener(this);
         btn_camera_closefilter.setOnClickListener(this);
@@ -170,16 +205,23 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
         btn_camera_switch.setOnClickListener(this);
         btn_camera_mode.setOnClickListener(this);
         btn_album.setOnClickListener(this);
-        btn_camera_beauty.setValue(5,false);//设置默认为5
-        btn_camera_beauty.setOnPositionChangeListener(new Slider.OnPositionChangeListener() {
-            @Override
-            public void onPositionChanged(Slider view, boolean fromUser, float oldPos, float newPos, int oldValue, int newValue) {
-                MagicAAFilter filter = (MagicAAFilter) cameraView.getFilter();
-                if (filter != null) {
-                    filter.setParams(newValue / 10f);
-                }
-            }
-        });
+//        btn_camera_beauty.setProgress(5);//设置默认为5
+        setting.setOnClickListener(this);
+		updown_seek.setOnSeekBarChangeListener(this);
+        max_seek.setOnSeekBarChangeListener(this);
+        left_seek.setOnSeekBarChangeListener(this);
+		beauty_seek.setOnSeekBarChangeListener(this);
+        btn_camera_beauty.setOnSeekBarChangeListener(this);
+
+//        btn_camera_beauty.setOnPositionChangeListener(new Slider.OnPositionChangeListener() {
+//            @Override
+//            public void onPositionChanged(Slider view, boolean fromUser, float oldPos, float newPos, int oldValue, int newValue) {
+//                MagicAAFilter filter = (MagicAAFilter) cameraView.getFilter();
+//                if (filter != null) {
+//                    filter.setParams(newValue / 10f);
+//                }
+//            }
+//        });
 
     }
 
@@ -319,6 +361,9 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
                 break;
             case R.id.btn_album:
                 startActivity(new Intent(CameraActivity.this, GalleryActivity.class));
+                break;
+				case R.id.setting:
+                setting(STATE);
                 break;
         }
     }
@@ -479,6 +524,15 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
                     if(currentItem!=0){//0 是把filter清空了
                         MattingImage item = data.get(currentItem);
                         aafilter.setBitmap(BitmapFactory.decodeStream(new FileInputStream(item.getSdPath())));
+                        //TODO 初始化所有状态值
+                        updown_seek.setProgress(5);
+                        max_seek.setProgress(10);
+                        left_seek.setProgress(5);
+                        beauty_seek.setProgress(5);
+                        btn_camera_beauty.setProgress(5);
+                        tran_text.setText(0.5+"");
+                        beauty_text.setText(0.5+"");
+
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -533,7 +587,7 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("account", AppData.getString(mContext, AppData.ACCOUNT));
-                map.put("device_id", PhoneUtil.getDevicesID(mContext));
+                map.put("device_id", PhoneUtil.getDevicesID());
                 return map;
             }
         };
@@ -606,7 +660,7 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
                                 Map<String, String> map = new HashMap<String, String>();
                                 map.put("account", AppData.getString(mContext, AppData.ACCOUNT));
                                 map.put("value", tempImage.getValue());
-                                map.put("device_id", PhoneUtil.getDevicesID(mContext));
+                                map.put("device_id", PhoneUtil.getDevicesID());
                                 return map;
                             }
                         };
@@ -627,6 +681,104 @@ public class CameraActivity extends BaseActivity implements View.OnClickListener
         }
     }
 
+    private void setting(int state){
+        switch (state){
+            case DISPLAY:
+                STATE = HIDE;
+                up_down.setVisibility(View.VISIBLE);
+                max_min.setVisibility(View.VISIBLE);
+                left_rigit.setVisibility(View.VISIBLE);
+                break;
+            case HIDE:
+                STATE = DISPLAY;
+                up_down.setVisibility(View.GONE);
+                max_min.setVisibility(View.GONE);
+                left_rigit.setVisibility(View.GONE);
+                break;
+        }
+    }
 
 
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        //上下
+        if (seekBar == updown_seek){
+            int params = updown_seek.getProgress();
+            float value = params/10f;
+            Log.e("上下value",value+"");
+            mLastMoveY = (value - mLastY) * 2;
+            move(mLastMoveX, mLastMoveY, 0);
+        }
+        //大小
+        if (seekBar == max_seek){
+            int params = max_seek.getProgress();
+            float value = params/10.f;
+            Log.e("大小value",value+"");
+            setSize(value);
+        }
+        //左右
+        if (seekBar == left_seek){
+            int params = left_seek.getProgress();
+            float value = params/10f;
+            Log.e("左右value",value+"");
+            mLastMoveX = (value - mLastX) * 2;
+            move(mLastMoveX, mLastMoveY, 1);
+        }
+        //美颜
+        if (seekBar == beauty_seek){
+            int params = beauty_seek.getProgress();
+            float value = params/10f;
+            beauty_text.setText(value+"");
+            Log.e("美颜value",value+"");
+            int beautyLevel = getBeautyLevel(params);
+            magicEngine.setBeautyLevel(beautyLevel);
+        }
+        //透明度
+        if (seekBar == btn_camera_beauty){
+            int params = btn_camera_beauty.getProgress();
+            float value = params/10f;
+            tran_text.setText(value+"");
+            Log.e("透明度value",value+"");
+            MagicAAFilter filter = (MagicAAFilter) cameraView.getFilter();
+            if (filter != null) {
+                filter.setParams(value);
+            }
+        }
+    }
+
+    private int getBeautyLevel(int param) {
+        int level = 0;
+        if (param == 0) {
+            level = 0;
+        } else if (param <= 25) {
+            level = 1;
+        } else if (param <= 50) {
+            level = 2;
+        } else if (param <= 75) {
+            level = 3;
+        } else if (param <= 90) {
+            level = 4;
+        } else {
+            level = 5;
+        }
+        return level;
+    }
+
+    private void setSize(float param) {
+        cameraView.scale(param);
+    }
+
+    private void move(float x, float y, int leftRight) {
+        cameraView.move(x, y, leftRight);
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+
+    }
 }

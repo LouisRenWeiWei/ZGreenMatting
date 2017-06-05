@@ -3,6 +3,7 @@ package com.seu.magicfilter.filter.base;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 
+import com.seu.magicfilter.R;
 import com.seu.magicfilter.filter.base.gpuimage.GPUImageFilter;
 import com.seu.magicfilter.utils.MagicParams;
 import com.seu.magicfilter.utils.OpenGlUtils;
@@ -13,6 +14,8 @@ public class MagicCameraInputFilter extends GPUImageFilter {
 
     private float[] mTextureTransformMatrix;
     private int mTextureTransformMatrixLocation;
+    private float[] mPositionTransformMatrix;
+    private int mPositionTransformMatrixLocation;
     private int mSingleStepOffsetLocation;
     private int mParamsLocation;
 
@@ -45,13 +48,16 @@ public class MagicCameraInputFilter extends GPUImageFilter {
             "}";
 
     public MagicCameraInputFilter(){
-        super(CAMERA_INPUT_VERTEX_SHADER,
-                CAMERA_INPUT_FRAGMENT_SHADER);
+//        super(CAMERA_INPUT_VERTEX_SHADER,
+//                CAMERA_INPUT_FRAGMENT_SHADER);
+        super(OpenGlUtils.readShaderFromRawResource(R.raw.default_vertex) ,
+                OpenGlUtils.readShaderFromRawResource(R.raw.default_fragment));
     }
 
     protected void onInit() {
         super.onInit();
         mTextureTransformMatrixLocation = GLES20.glGetUniformLocation(mGLProgId, "textureTransform");
+        mPositionTransformMatrixLocation = GLES20.glGetUniformLocation(mGLProgId, "uMVPMatrix");
         mSingleStepOffsetLocation = GLES20.glGetUniformLocation(getProgram(), "singleStepOffset");
         mParamsLocation = GLES20.glGetUniformLocation(getProgram(), "params");
         setBeautyLevel(MagicParams.beautyLevel);
@@ -59,6 +65,10 @@ public class MagicCameraInputFilter extends GPUImageFilter {
 
     public void setTextureTransformMatrix(float[] mtx){
         mTextureTransformMatrix = mtx;
+    }
+
+    public void setPositionTransformMatrix(float[] mtx) {
+        mPositionTransformMatrix = mtx;
     }
 
     @Override
@@ -75,6 +85,7 @@ public class MagicCameraInputFilter extends GPUImageFilter {
         GLES20.glVertexAttribPointer(mGLAttribTextureCoordinate, 2, GLES20.GL_FLOAT, false, 0, mGLTextureBuffer);
         GLES20.glEnableVertexAttribArray(mGLAttribTextureCoordinate);
         GLES20.glUniformMatrix4fv(mTextureTransformMatrixLocation, 1, false, mTextureTransformMatrix, 0);
+        GLES20.glUniformMatrix4fv(mPositionTransformMatrixLocation, 1, false, mPositionTransformMatrix, 0);
 
         if(textureId != OpenGlUtils.NO_TEXTURE){
             GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
@@ -103,6 +114,7 @@ public class MagicCameraInputFilter extends GPUImageFilter {
         GLES20.glVertexAttribPointer(mGLAttribTextureCoordinate, 2, GLES20.GL_FLOAT, false, 0, textureBuffer);
         GLES20.glEnableVertexAttribArray(mGLAttribTextureCoordinate);
         GLES20.glUniformMatrix4fv(mTextureTransformMatrixLocation, 1, false, mTextureTransformMatrix, 0);
+        GLES20.glUniformMatrix4fv(mPositionTransformMatrixLocation, 1, false, mPositionTransformMatrix, 0);
 
         if(textureId != OpenGlUtils.NO_TEXTURE){
             GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
@@ -127,6 +139,8 @@ public class MagicCameraInputFilter extends GPUImageFilter {
         if(!isInitialized()) {
             return OpenGlUtils.NOT_INIT;
         }
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+        GLES20.glClearColor(1.f, 1.f, 1.f, 0);
         mGLCubeBuffer.position(0);
         GLES20.glVertexAttribPointer(mGLAttribPosition, 2, GLES20.GL_FLOAT, false, 0, mGLCubeBuffer);
         GLES20.glEnableVertexAttribArray(mGLAttribPosition);
@@ -134,6 +148,7 @@ public class MagicCameraInputFilter extends GPUImageFilter {
         GLES20.glVertexAttribPointer(mGLAttribTextureCoordinate, 2, GLES20.GL_FLOAT, false, 0, mGLTextureBuffer);
         GLES20.glEnableVertexAttribArray(mGLAttribTextureCoordinate);
         GLES20.glUniformMatrix4fv(mTextureTransformMatrixLocation, 1, false, mTextureTransformMatrix, 0);
+        GLES20.glUniformMatrix4fv(mPositionTransformMatrixLocation, 1, false, mPositionTransformMatrix, 0);
 
         if(textureId != OpenGlUtils.NO_TEXTURE){
             GLES20.glActiveTexture(GLES20.GL_TEXTURE0);

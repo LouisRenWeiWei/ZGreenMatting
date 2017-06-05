@@ -2,9 +2,8 @@ package com.seu.magicfilter.filter.advanced;
 
 import android.opengl.GLES20;
 
-import com.seu.magicfilter.R;
+import com.momo.zgreenmattingshader.ZGreenMattingUtil;
 import com.seu.magicfilter.filter.base.gpuimage.GPUImageFilter;
-import com.seu.magicfilter.utils.OpenGlUtils;
 
 /**
  * Created by Administrator on 2016/5/22.
@@ -12,9 +11,16 @@ import com.seu.magicfilter.utils.OpenGlUtils;
 public class MagicMattingFilter extends GPUImageFilter {
     private int mParamsLocation;
 
+    private float[] mPositionTransformMatrix;
+    private int mPositionTransformMatrixLocation;
+
+
+
     public MagicMattingFilter(){
-        super(NO_FILTER_VERTEX_SHADER_1 ,
-                OpenGlUtils.readShaderFromRawResource(R.raw.fragment_shader_matting));
+//        super(NO_FILTER_VERTEX_SHADER_1 ,
+//                OpenGlUtils.readShaderFromRawResource(R.raw.fragment_shader_matting));
+//        super(mMattingVertexShader, OpenGlUtils.readShaderFromRawResource(R.raw.fragment_shader_matting));
+        super(ZGreenMattingUtil.getMattingVertexShader(), ZGreenMattingUtil.getMattingFragmentShader());
     }
 
     protected void onInit() {
@@ -22,6 +28,7 @@ public class MagicMattingFilter extends GPUImageFilter {
 
         mGLUniformTexture = GLES20.glGetUniformLocation(mGLProgId, "uTexture");
         mParamsLocation = GLES20.glGetUniformLocation(getProgram(), "params");
+        mPositionTransformMatrixLocation = GLES20.glGetUniformLocation(mGLProgId, "uMVPMatrix");
     }
 
 
@@ -39,5 +46,15 @@ public class MagicMattingFilter extends GPUImageFilter {
         super.onInitialized();
         setParams(0.5f);
 
+    }
+
+    @Override
+    protected void onDrawArraysPre() {
+        super.onDrawArraysPre();
+        GLES20.glUniformMatrix4fv(mPositionTransformMatrixLocation, 1, false, mPositionTransformMatrix, 0);
+    }
+
+    public void setPositionTransformMatrix(float[] mtx) {
+        mPositionTransformMatrix = mtx;
     }
 }

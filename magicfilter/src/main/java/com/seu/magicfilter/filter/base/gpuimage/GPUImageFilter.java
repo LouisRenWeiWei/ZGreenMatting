@@ -64,6 +64,49 @@ public class GPUImageFilter {
             "     gl_FragColor = texture2D(inputImageTexture, textureCoordinate);\n" +
             "}";
 
+    public static final String mBlurVertexShader =
+            "attribute vec4 position;\n" +
+                    "attribute vec4 inputTextureCoordinate;\n" +
+                    " \n" +
+                    "varying vec2 vTextureCoord;\n" +
+                    " \n" +
+                    "uniform mat4 uMVPMatrix;\n" +
+                    "void main()\n" +
+                    "{\n" +
+                    "    gl_Position = uMVPMatrix * position;\n" +
+                    "    vTextureCoord = inputTextureCoordinate.xy;\n" +
+                    "}";
+
+    public  static final String mMattingVertexShader = "" +
+            "attribute vec4 position;\n" +
+            "attribute vec4 inputTextureCoordinate;\n" +
+            " \n" +
+            "uniform mat4 uMVPMatrix;\n" +
+            "varying vec2 vTextureCoord;\n" +
+            " \n" +
+            "void main()\n" +
+            "{\n" +
+            "    gl_Position = uMVPMatrix * position;\n" +
+            "    vTextureCoord = inputTextureCoordinate.xy;\n" +
+            "}";;
+
+    public static final String mBlendVertexShader = "attribute vec4 position;\n" +
+            "attribute vec4 inputTextureCoordinate;\n" +
+            "attribute vec4 inputExtraTextureCoordinate;\n" +
+
+            " \n" +
+            "uniform mat4 uMVPMatrix;\n" +
+            "varying vec2 vTextureCoord;\n" +
+            "varying vec2 vExtraTextureCoord;\n" +
+
+            " \n" +
+            "void main()\n" +
+            "{\n" +
+            "    gl_Position = uMVPMatrix * position;\n" +
+            "    vTextureCoord = inputTextureCoordinate.xy;\n" +
+            "    vExtraTextureCoord = inputExtraTextureCoordinate.xy;\n" +
+            "}";
+
     private final LinkedList<Runnable> mRunOnDraw;
     private final String mVertexShader;
     private final String mFragmentShader;
@@ -139,7 +182,7 @@ public class GPUImageFilter {
         if (!mIsInitialized) {
             return OpenGlUtils.NOT_INIT;
         }
-
+        GLES20.glClearColor(1.0f, 1.0f, 1.0f, 0);
         cubeBuffer.position(0);
         GLES20.glVertexAttribPointer(mGLAttribPosition, 2, GLES20.GL_FLOAT, false, 0, cubeBuffer);
         GLES20.glEnableVertexAttribArray(mGLAttribPosition);

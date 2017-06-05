@@ -3,6 +3,7 @@ package com.seu.magicfilter;
 import com.seu.magicfilter.camera.CameraEngine;
 import com.seu.magicfilter.helper.SavePictureTask;
 import com.seu.magicfilter.utils.MagicParams;
+import com.seu.magicfilter.widget.MagicCameraView;
 import com.seu.magicfilter.widget.base.MagicBaseView;
 
 import java.io.File;
@@ -33,10 +34,22 @@ public class MagicEngine {
         MagicParams.magicBaseView.savePicture(savePictureTask);
     }
 
-    public void setFilterListener(MagicBaseView.OnFilterChangedListener onFilterChangedListener){
-        MagicParams.magicBaseView.setOnFilterChangedListener(onFilterChangedListener);
+    public void startRecord(){
+        if(MagicParams.magicBaseView instanceof MagicCameraView)
+            ((MagicCameraView)MagicParams.magicBaseView).changeRecordingState(true);
     }
 
+    public void stopRecord(){
+        if(MagicParams.magicBaseView instanceof MagicCameraView)
+            ((MagicCameraView)MagicParams.magicBaseView).changeRecordingState(false);
+    }
+
+    public void setBeautyLevel(int level){
+        if(MagicParams.magicBaseView instanceof MagicCameraView && MagicParams.beautyLevel != level) {
+            MagicParams.beautyLevel = level;
+            ((MagicCameraView) MagicParams.magicBaseView).onBeautyLevelChanged();
+        }
+    }
 
     public void switchCamera(){
         CameraEngine.switchCamera();
@@ -60,5 +73,9 @@ public class MagicEngine {
             return this;
         }
 
+    }
+
+    public void setFilterListener(MagicBaseView.OnFilterChangedListener onFilterChangedListener){
+        MagicParams.magicBaseView.setOnFilterChangedListener(onFilterChangedListener);
     }
 }
